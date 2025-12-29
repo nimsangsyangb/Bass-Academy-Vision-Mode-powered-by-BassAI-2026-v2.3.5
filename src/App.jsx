@@ -3,10 +3,15 @@ import {
   Play,
   Square,
   RefreshCw,
-  Volume2,
   Music,
   AlertCircle,
+  GraduationCap,
+  BookOpen,
+  Zap,
+  Target,
+  ChevronRight,
 } from "lucide-react";
+import Footer from "./components/Footer";
 
 const BassTrainer = () => {
   // Estados para la UI
@@ -127,13 +132,10 @@ const BassTrainer = () => {
     playSound(note.string, note.fret, time);
 
     // 2. Programar actualización visual
-    // Usamos setTimeout para que la UI se actualice justo cuando suena la nota
-    // Calculamos el delay entre el tiempo de audio programado y el tiempo actual
     const ctx = audioContextRef.current;
     const delay = Math.max(0, (time - ctx.currentTime) * 1000);
 
     setTimeout(() => {
-      // Verificamos si seguimos tocando para evitar actualizaciones fantasma
       if (isPlayingRef.current) {
         setCurrentNoteIndex(index);
       }
@@ -151,7 +153,6 @@ const BassTrainer = () => {
       if (isLoopingRef.current) {
         playIndexRef.current = 0;
       } else {
-        // Stop lógico
         return false; // Indica fin
       }
     }
@@ -162,24 +163,21 @@ const BassTrainer = () => {
     const ctx = audioContextRef.current;
     // Lookahead de 100ms
     while (nextNoteTimeRef.current < ctx.currentTime + 0.1) {
-      // Si el índice es válido, programar nota
       if (playIndexRef.current < notesRef.current.length) {
         scheduleNote(playIndexRef.current, nextNoteTimeRef.current);
       }
 
-      // Avanzar al siguiente slot de tiempo
       const shouldContinue = nextNote();
 
       if (!shouldContinue) {
         setIsPlaying(false);
         setCurrentNoteIndex(-1);
-        return; // Salir del scheduler
+        return;
       }
     }
     timerIDRef.current = requestAnimationFrame(schedulerRef.current);
-  }, []); // Dependencias vacías, usa Refs
+  }, []);
 
-  // Guardar scheduler en ref después de su declaración
   useEffect(() => {
     schedulerRef.current = scheduler;
   }, [scheduler]);
@@ -187,7 +185,6 @@ const BassTrainer = () => {
   const handlePlay = async () => {
     const ctx = audioContextRef.current;
 
-    // Siempre intentar reanudar el contexto de audio por si el navegador lo suspendió
     if (ctx.state === "suspended") {
       await ctx.resume();
     }
@@ -199,7 +196,6 @@ const BassTrainer = () => {
     setCurrentNoteIndex(-1);
     playIndexRef.current = 0;
 
-    // Importante: Dar un pequeño margen (0.1s) para empezar
     nextNoteTimeRef.current = ctx.currentTime + 0.1;
 
     scheduler();
@@ -212,31 +208,56 @@ const BassTrainer = () => {
   };
 
   const renderString = (stringName) => (
-    <div className="flex items-center mb-6 relative h-10 select-none">
-      <div className="w-12 text-gray-500 font-bold text-xl">{stringName}</div>
+    <div className="flex items-center mb-4 relative h-12 select-none group">
+      {/* String Label */}
+      <div 
+        className="w-14 font-mono text-lg font-bold text-[var(--color-gold)] 
+                   flex items-center justify-center"
+      >
+        <span className="bg-[var(--color-primary-dark)] px-3 py-1 rounded-lg border border-[var(--color-gold)]/30">
+          {stringName}
+        </span>
+      </div>
+      
+      {/* String Container */}
       <div className="flex-1 relative flex items-center">
-        {/* Cuerda */}
-        <div className="absolute w-full h-[2px] bg-gray-600"></div>
+        {/* String Line with Gradient */}
+        <div 
+          className="absolute w-full h-[3px] rounded-full"
+          style={{
+            background: `linear-gradient(90deg, 
+              var(--color-primary-medium) 0%, 
+              var(--color-gold) 20%, 
+              var(--color-gold-light) 50%, 
+              var(--color-gold) 80%, 
+              var(--color-primary-medium) 100%)`
+          }}
+        />
 
-        {/* Trastes / Notas */}
-        <div className="flex w-full justify-between relative z-10 px-2">
+        {/* Frets / Notes */}
+        <div className="flex w-full justify-between relative z-10 px-3">
           {tabData.map((note, idx) => {
             if (note.string !== stringName)
-              return <div key={idx} className="w-8 h-8"></div>;
+              return <div key={idx} className="w-10 h-10" />;
 
             const isActive = currentNoteIndex === idx;
             return (
               <div
                 key={idx}
                 className={`
-                  w-8 h-8 flex items-center justify-center rounded-full text-sm font-bold 
-                  transition-all duration-75 border
+                  w-10 h-10 flex items-center justify-center rounded-xl 
+                  font-mono text-sm font-bold transition-all duration-100
                   ${
                     isActive
-                      ? "bg-yellow-400 text-black border-yellow-400 scale-125 shadow-[0_0_15px_rgba(250,204,21,0.8)]"
-                      : "bg-gray-800 text-gray-300 border-gray-600"
+                      ? "bg-[var(--color-active)] text-[var(--color-primary-deep)] scale-125 animate-pulse-glow border-2 border-[var(--color-active)]"
+                      : "bg-[var(--color-primary-dark)] text-[var(--color-cream)] border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50 hover:bg-[var(--color-primary-medium)]/50"
                   }
                 `}
+                style={{
+                  boxShadow: isActive 
+                    ? "0 0 20px var(--color-active-glow), 0 0 40px var(--color-active-glow)" 
+                    : "0 4px 12px rgba(0,0,0,0.3)"
+                }}
               >
                 {note.fret}
               </div>
@@ -248,122 +269,260 @@ const BassTrainer = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-4 font-sans">
-      <div className="max-w-5xl w-full bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden">
-        {/* Header */}
-        <div className="bg-gray-800 p-6 border-b border-gray-700 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2 text-white">
-              <Music className="text-blue-500" />
-              Bass Practice
-            </h1>
-            <p className="text-gray-400 text-sm mt-1">
-              Emaj11 & Fm11 (Tresillos)
+    <div className="min-h-screen flex flex-col items-center justify-start py-8 px-4 font-[var(--font-body)]">
+      {/* Main Container */}
+      <div className="max-w-6xl w-full">
+        
+        {/* Academic Header */}
+        <header className="mb-8 animate-fadeInUp">
+          {/* Institution Badge */}
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-16 h-16 rounded-2xl gradient-gold flex items-center justify-center shadow-lg">
+              <GraduationCap className="w-9 h-9 text-[var(--color-primary-deep)]" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-[var(--color-gold)] font-medium">
+                Bass Academy · Est. 2026
+              </p>
+              <h1 className="font-[var(--font-display)] text-3xl md:text-4xl font-bold text-[var(--color-cream)]">
+                John Patitucci
+              </h1>
+            </div>
+          </div>
+
+          {/* Main Title */}
+          <div className="text-center mb-6">
+            <h2 className="font-[var(--font-display)] text-2xl md:text-3xl font-semibold text-gradient-gold mb-2">
+              Modern Jazz Bass Technique
+            </h2>
+            <p className="text-[var(--color-primary-light)] text-lg">
+              Interactive Arpeggio Study · Web 4.0 Training System
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span
-              className={`w-3 h-3 rounded-full ${
-                isPlaying ? "bg-green-500 animate-pulse" : "bg-red-500"
-              }`}
-            ></span>
-            <span className="text-xs text-gray-500 uppercase font-semibold">
-              {isPlaying ? "Tocando" : "Pausado"}
-            </span>
+
+          {/* Status Indicator */}
+          <div className="flex justify-center">
+            <div 
+              className={`
+                glass px-5 py-2 rounded-full flex items-center gap-3
+                ${isPlaying ? "border-[var(--color-success)]" : "border-[var(--color-primary-medium)]"}
+              `}
+            >
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  isPlaying ? "bg-[var(--color-success)] animate-pulse" : "bg-[var(--color-error)]"
+                }`}
+              />
+              <span className="text-sm uppercase tracking-wider font-medium text-[var(--color-cream)]">
+                {isPlaying ? "Playing" : "Ready"}
+              </span>
+              <Music className={`w-4 h-4 ${isPlaying ? "text-[var(--color-success)]" : "text-[var(--color-primary-light)]"}`} />
+            </div>
+          </div>
+        </header>
+
+        {/* Educational Info Panel */}
+        <div className="glass-strong rounded-2xl p-6 mb-6 animate-fadeInUp" style={{animationDelay: "0.1s"}}>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Technique Info */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-gold)]/20 flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-6 h-6 text-[var(--color-gold)]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[var(--color-cream)] mb-1">Technique</h3>
+                <p className="text-sm text-[var(--color-primary-light)]">
+                  Triplet arpeggios ascending and descending across all four strings
+                </p>
+              </div>
+            </div>
+
+            {/* Chord Study */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-info)]/20 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-6 h-6 text-[var(--color-info)]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[var(--color-cream)] mb-1">Chords</h3>
+                <p className="text-sm text-[var(--color-primary-light)]">
+                  <span className="font-mono text-[var(--color-gold)]">Emaj11</span> → <span className="font-mono text-[var(--color-gold)]">Fm11</span> progression
+                </p>
+              </div>
+            </div>
+
+            {/* Goal */}
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-success)]/20 flex items-center justify-center flex-shrink-0">
+                <Target className="w-6 h-6 text-[var(--color-success)]" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-[var(--color-cream)] mb-1">Objective</h3>
+                <p className="text-sm text-[var(--color-primary-light)]">
+                  Develop fluid arpeggio technique with even triplet timing
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Tablatura */}
-        <div className="p-8 overflow-x-auto bg-black/20">
-          <div className="min-w-[700px]">
-            {renderString("G")}
-            {renderString("D")}
-            {renderString("A")}
-            {renderString("E")}
+        {/* Main Practice Area */}
+        <div 
+          className="glass-strong rounded-3xl overflow-hidden mb-6 animate-fadeInUp" 
+          style={{animationDelay: "0.2s"}}
+        >
+          {/* Tab Section Header */}
+          <div className="bg-[var(--color-primary-dark)]/50 px-8 py-4 border-b border-[var(--color-primary-medium)]/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl gradient-gold flex items-center justify-center">
+                  <Music className="w-5 h-5 text-[var(--color-primary-deep)]" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[var(--color-cream)]">Interactive Tablature</h3>
+                  <p className="text-xs text-[var(--color-primary-light)]">Follow the highlighted notes</p>
+                </div>
+              </div>
+              
+              {/* Note Counter */}
+              <div className="font-mono text-sm bg-[var(--color-primary-deep)] px-4 py-2 rounded-lg border border-[var(--color-primary-medium)]">
+                <span className="text-[var(--color-gold)]">{currentNoteIndex >= 0 ? currentNoteIndex + 1 : 0}</span>
+                <span className="text-[var(--color-primary-light)]"> / {tabData.length}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Guía de compases */}
-          <div className="flex pl-14 mt-4 text-xs tracking-widest text-gray-600 uppercase">
-            <div className="w-1/2 text-center border-t border-gray-700 pt-2">
-              Compás 1: Emaj11
+          {/* Tablature */}
+          <div className="p-8 overflow-x-auto">
+            <div className="min-w-[800px]">
+              {renderString("G")}
+              {renderString("D")}
+              {renderString("A")}
+              {renderString("E")}
             </div>
-            <div className="w-1/2 text-center border-t border-gray-700 pt-2">
-              Compás 2: Fm11
+
+            {/* Measure Guide */}
+            <div className="flex pl-14 mt-6 gap-4">
+              <div className="flex-1 glass rounded-xl p-3 text-center border-l-4 border-[var(--color-gold)]">
+                <p className="text-xs uppercase tracking-wider text-[var(--color-primary-light)] mb-1">Measure 1</p>
+                <p className="font-mono font-bold text-[var(--color-gold)]">Emaj11</p>
+              </div>
+              <div className="w-8 flex items-center justify-center">
+                <ChevronRight className="w-6 h-6 text-[var(--color-primary-medium)]" />
+              </div>
+              <div className="flex-1 glass rounded-xl p-3 text-center border-l-4 border-[var(--color-info)]">
+                <p className="text-xs uppercase tracking-wider text-[var(--color-primary-light)] mb-1">Measure 2</p>
+                <p className="font-mono font-bold text-[var(--color-info)]">Fm11</p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Panel de Control */}
-        <div className="p-6 bg-gray-800 border-t border-gray-700">
-          <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-            {/* Botones */}
+        {/* Control Panel */}
+        <div 
+          className="glass-strong rounded-2xl p-6 animate-fadeInUp" 
+          style={{animationDelay: "0.3s"}}
+        >
+          <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
+            {/* Playback Controls */}
             <div className="flex gap-4">
               {!isPlaying ? (
                 <button
                   onClick={handlePlay}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-lg shadow-blue-900/20"
+                  className="group relative bg-gradient-to-r from-[var(--color-gold)] to-[var(--color-gold-light)] 
+                           text-[var(--color-primary-deep)] px-8 py-4 rounded-2xl font-bold 
+                           flex items-center gap-3 transition-all duration-300 
+                           hover:shadow-[0_0_30px_var(--color-gold)/40] hover:scale-105
+                           active:scale-95"
                 >
-                  <Play className="fill-current w-5 h-5" /> REPRODUCIR
+                  <Play className="w-6 h-6 fill-current" />
+                  <span className="text-lg">PLAY</span>
                 </button>
               ) : (
                 <button
                   onClick={handleStop}
-                  className="bg-red-600 hover:bg-red-500 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-lg shadow-red-900/20"
+                  className="group relative bg-gradient-to-r from-[var(--color-error)] to-red-400 
+                           text-white px-8 py-4 rounded-2xl font-bold 
+                           flex items-center gap-3 transition-all duration-300 
+                           hover:shadow-[0_0_30px_var(--color-error)/40] hover:scale-105
+                           active:scale-95"
                 >
-                  <Square className="fill-current w-5 h-5" /> DETENER
+                  <Square className="w-6 h-6 fill-current" />
+                  <span className="text-lg">STOP</span>
                 </button>
               )}
 
               <button
                 onClick={() => setIsLooping(!isLooping)}
-                className={`px-4 py-3 rounded-xl border font-medium flex items-center gap-2 transition-colors ${
-                  isLooping
-                    ? "bg-green-600/20 border-green-500 text-green-400"
-                    : "bg-gray-700/50 border-gray-600 text-gray-400 hover:bg-gray-700"
-                }`}
+                className={`
+                  px-6 py-4 rounded-2xl font-medium flex items-center gap-3 
+                  transition-all duration-300 border-2
+                  ${
+                    isLooping
+                      ? "bg-[var(--color-success)]/20 border-[var(--color-success)] text-[var(--color-success)]"
+                      : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
+                  }
+                `}
               >
                 <RefreshCw
                   className={`w-5 h-5 ${isLooping ? "animate-spin-slow" : ""}`}
                 />
-                {isLooping ? "Loop Activado" : "Loop Desactivado"}
+                <span>{isLooping ? "Loop ON" : "Loop OFF"}</span>
               </button>
             </div>
 
-            {/* Fader de Tempo */}
-            <div className="flex-1 w-full max-w-md bg-gray-900/50 p-4 rounded-xl border border-gray-700">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-gray-400 text-sm font-medium flex items-center gap-2">
-                  <Volume2 className="w-4 h-4" /> Velocidad (BPM)
-                </span>
-                <span className="text-xl font-mono font-bold text-yellow-500">
-                  {tempo}
-                </span>
-              </div>
-              <input
-                type="range"
-                min="40"
-                max="160"
-                step="5"
-                value={tempo}
-                onChange={(e) => setTempo(Number(e.target.value))}
-                className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
-              />
-              <div className="flex justify-between mt-2 text-xs text-gray-600">
-                <span>Lento (40)</span>
-                <span>Normal (100)</span>
-                <span>Rápido (160)</span>
+            {/* Tempo Control */}
+            <div className="flex-1 w-full max-w-md">
+              <div className="glass rounded-2xl p-5 border border-[var(--color-primary-medium)]">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-[var(--color-primary-light)] text-sm font-medium uppercase tracking-wider">
+                    Tempo (BPM)
+                  </span>
+                  <span className="text-3xl font-mono font-bold text-[var(--color-gold)]">
+                    {tempo}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min="40"
+                  max="160"
+                  step="5"
+                  value={tempo}
+                  onChange={(e) => setTempo(Number(e.target.value))}
+                  className="w-full h-3 bg-[var(--color-primary-dark)] rounded-full appearance-none cursor-pointer
+                           [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
+                           [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-gold)] 
+                           [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:border-4 
+                           [&::-webkit-slider-thumb]:border-[var(--color-gold-light)] 
+                           [&::-webkit-slider-thumb]:shadow-[0_0_10px_var(--color-gold)]
+                           [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:duration-200
+                           [&::-webkit-slider-thumb]:hover:scale-110"
+                />
+                <div className="flex justify-between mt-3 text-xs text-[var(--color-primary-medium)] font-medium">
+                  <span>Slow (40)</span>
+                  <span>Medium (100)</span>
+                  <span>Fast (160)</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Instrucciones */}
+        {/* Audio Ready Notice */}
         {!isAudioReady && (
-          <div className="bg-yellow-900/30 text-yellow-200 text-sm p-3 text-center border-t border-yellow-900/50 flex items-center justify-center gap-2">
-            <AlertCircle className="w-4 h-4" />
-            Pulsa "Reproducir" para activar el motor de audio.
+          <div 
+            className="mt-6 glass rounded-xl p-4 border border-[var(--color-warning)]/30 
+                       flex items-center justify-center gap-3 animate-fadeInUp"
+            style={{animationDelay: "0.4s"}}
+          >
+            <AlertCircle className="w-5 h-5 text-[var(--color-warning)]" />
+            <span className="text-[var(--color-warning)] text-sm font-medium">
+              Press "PLAY" to activate the audio engine
+            </span>
           </div>
         )}
+
+        {/* Footer Component */}
+        <Footer />
       </div>
     </div>
   );
