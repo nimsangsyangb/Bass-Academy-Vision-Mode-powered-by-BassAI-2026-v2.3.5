@@ -748,92 +748,102 @@ const BassTrainer = () => {
               </div>
             </div>
 
-            {/* Playback Controls */}
-            <div className="flex gap-2 sm:gap-4 justify-center flex-wrap">
-              {!isPlaying ? (
-                <button
-                  onClick={handlePlay}
-                  className="group relative bg-gradient-to-r from-[var(--color-gold)] to-[var(--color-gold-light)] 
-                           text-[var(--color-primary-deep)] px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold 
-                           flex items-center gap-2 sm:gap-3 transition-all duration-300 
-                           hover:shadow-[0_0_30px_var(--color-gold)/40] hover:scale-105
-                           active:scale-95"
-                >
-                  <Play className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
-                  <span className="text-base sm:text-lg">PLAY</span>
-                </button>
-              ) : (
-                <button
-                  onClick={handleStop}
-                  className="group relative bg-gradient-to-r from-[var(--color-error)] to-red-400 
-                           text-white px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold 
-                           flex items-center gap-2 sm:gap-3 transition-all duration-300 
-                           hover:shadow-[0_0_30px_var(--color-error)/40] hover:scale-105
-                           active:scale-95"
-                >
-                  <Square className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
-                  <span className="text-base sm:text-lg">STOP</span>
-                </button>
-              )}
-
-              <button
-                onClick={() => setIsLooping(!isLooping)}
-                className={`
-                  px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 
-                  transition-all duration-300 border-2 text-sm sm:text-base
-                  ${
-                    isLooping
-                      ? "bg-[var(--color-success)]/20 border-[var(--color-success)] text-[var(--color-success)]"
-                      : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
-                  }
-                `}
-              >
-                <RefreshCw
-                  className={`w-4 h-4 sm:w-5 sm:h-5 ${isLooping ? "animate-spin-slow" : ""}`}
-                />
-                <span className="hidden xs:inline">{isLooping ? "Loop ON" : "Loop OFF"}</span>
-                <span className="xs:hidden">{isLooping ? "ON" : "OFF"}</span>
-              </button>
-
-              {/* Mute Notes Toggle */}
-              <button
-                onClick={() => setIsNotesMuted(!isNotesMuted)}
-                className={`
-                  px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 
-                  transition-all duration-300 border-2 text-sm sm:text-base
-                  ${
-                    isNotesMuted
-                      ? "bg-[var(--color-warning)]/20 border-[var(--color-warning)] text-[var(--color-warning)]"
-                      : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
-                  }
-                `}
-              >
-                <Music className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span className="hidden xs:inline">{isNotesMuted ? "Notas OFF" : "Notas ON"}</span>
-                <span className="xs:hidden">{isNotesMuted ? "OFF" : "ON"}</span>
-              </button>
-
-              {/* Metronome Toggle */}
-              <button
-                onClick={() => setIsMetronomeEnabled(!isMetronomeEnabled)}
-                className={`
-                  px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium flex items-center gap-2 sm:gap-3 
-                  transition-all duration-300 border-2 text-sm sm:text-base
-                  ${
-                    isMetronomeEnabled
-                      ? "bg-[var(--color-info)]/20 border-[var(--color-info)] text-[var(--color-info)]"
-                      : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
-                  }
-                `}
-              >
-                {isMetronomeEnabled ? (
-                  <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            {/* Playback Controls - Mobile Optimized Layout */}
+            <div className="flex flex-col gap-3 sm:gap-4">
+              {/* Main Play/Stop Button - Full Width on Mobile */}
+              <div className="flex justify-center">
+                {!isPlaying ? (
+                  <button
+                    onClick={handlePlay}
+                    className="group relative bg-gradient-to-r from-[var(--color-gold)] to-[var(--color-gold-light)] 
+                             text-[var(--color-primary-deep)] px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-bold 
+                             flex items-center gap-3 transition-all duration-300 
+                             hover:shadow-[0_0_30px_var(--color-gold)/40] hover:scale-105
+                             active:scale-95 text-lg sm:text-xl min-w-[140px] justify-center"
+                  >
+                    <Play className="w-6 h-6 sm:w-7 sm:h-7 fill-current" />
+                    <span>PLAY</span>
+                  </button>
                 ) : (
-                  <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <button
+                    onClick={handleStop}
+                    className="group relative bg-gradient-to-r from-[var(--color-error)] to-red-400 
+                             text-white px-8 sm:px-10 py-4 sm:py-5 rounded-2xl font-bold 
+                             flex items-center gap-3 transition-all duration-300 
+                             hover:shadow-[0_0_30px_var(--color-error)/40] hover:scale-105
+                             active:scale-95 text-lg sm:text-xl min-w-[140px] justify-center"
+                  >
+                    <Square className="w-6 h-6 sm:w-7 sm:h-7 fill-current" />
+                    <span>STOP</span>
+                  </button>
                 )}
-                <span className="hidden xs:inline">{isMetronomeEnabled ? "Click ON" : "Click OFF"}</span>
-                <span className="xs:hidden">{isMetronomeEnabled ? "ON" : "OFF"}</span>
-              </button>
+              </div>
+
+              {/* Toggle Buttons - 3 Columns on Mobile, Better Touch Targets */}
+              <div className="grid grid-cols-3 gap-2 sm:flex sm:justify-center sm:gap-4">
+                {/* Loop Toggle */}
+                <button
+                  onClick={() => setIsLooping(!isLooping)}
+                  className={`
+                    flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2
+                    px-3 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium
+                    transition-all duration-300 border-2 text-xs sm:text-base
+                    min-h-[60px] sm:min-h-0
+                    ${
+                      isLooping
+                        ? "bg-[var(--color-success)]/20 border-[var(--color-success)] text-[var(--color-success)]"
+                        : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
+                    }
+                  `}
+                >
+                  <RefreshCw
+                    className={`w-5 h-5 sm:w-5 sm:h-5 ${isLooping ? "animate-spin-slow" : ""}`}
+                  />
+                  <span className="text-[10px] sm:text-sm font-semibold">{isLooping ? "ON" : "OFF"}</span>
+                </button>
+
+                {/* Mute Notes Toggle */}
+                <button
+                  onClick={() => setIsNotesMuted(!isNotesMuted)}
+                  className={`
+                    flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2
+                    px-3 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium
+                    transition-all duration-300 border-2 text-xs sm:text-base
+                    min-h-[60px] sm:min-h-0
+                    ${
+                      isNotesMuted
+                        ? "bg-[var(--color-warning)]/20 border-[var(--color-warning)] text-[var(--color-warning)]"
+                        : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
+                    }
+                  `}
+                >
+                  <Music className="w-5 h-5 sm:w-5 sm:h-5" />
+                  <span className="text-[10px] sm:text-sm font-semibold">{isNotesMuted ? "OFF" : "ON"}</span>
+                </button>
+
+                {/* Metronome Toggle */}
+                <button
+                  onClick={() => setIsMetronomeEnabled(!isMetronomeEnabled)}
+                  className={`
+                    flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2
+                    px-3 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-medium
+                    transition-all duration-300 border-2 text-xs sm:text-base
+                    min-h-[60px] sm:min-h-0
+                    ${
+                      isMetronomeEnabled
+                        ? "bg-[var(--color-info)]/20 border-[var(--color-info)] text-[var(--color-info)]"
+                        : "bg-[var(--color-primary-dark)] border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:border-[var(--color-primary-light)]"
+                    }
+                  `}
+                >
+                  {isMetronomeEnabled ? (
+                    <Volume2 className="w-5 h-5 sm:w-5 sm:h-5" />
+                  ) : (
+                    <VolumeX className="w-5 h-5 sm:w-5 sm:h-5" />
+                  )}
+                  <span className="text-[10px] sm:text-sm font-semibold">{isMetronomeEnabled ? "ON" : "OFF"}</span>
+                </button>
+              </div>
             </div>
 
             {/* Tempo Control */}
