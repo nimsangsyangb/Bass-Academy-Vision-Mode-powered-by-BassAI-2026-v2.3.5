@@ -12,8 +12,11 @@ import {
   ChevronRight,
   Volume2,
   VolumeX,
+  Guitar,
+  List,
 } from "lucide-react";
 import Footer from "./components/Footer";
+import FretboardView from "./components/FretboardView";
 
 const BassTrainer = () => {
   // Estados para la UI
@@ -33,6 +36,7 @@ const BassTrainer = () => {
   const [currentMeasure, setCurrentMeasure] = useState(0); // Compás actual (1-based para UI)
   const [isMetronomeEnabled, setIsMetronomeEnabled] = useState(false);
   const [isNotesMuted, setIsNotesMuted] = useState(false); // Mutear notas para practicar solo con metrónomo
+  const [viewMode, setViewMode] = useState('tab'); // 'tab' or 'fretboard'
 
   // Referencias para el motor de audio (evitan stale closures)
   const audioContextRef = useRef(null);
@@ -512,22 +516,71 @@ const BassTrainer = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl gradient-gold flex items-center justify-center">
-                  <Music className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-primary-deep)]" />
+                  {viewMode === 'tab' ? (
+                    <Music className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-primary-deep)]" />
+                  ) : (
+                    <Guitar className="w-4 h-4 sm:w-5 sm:h-5 text-[var(--color-primary-deep)]" />
+                  )}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[var(--color-cream)] text-sm sm:text-base">Tablature</h3>
-                  <p className="text-[10px] sm:text-xs text-[var(--color-primary-light)] hidden sm:block">Follow the highlighted notes</p>
+                  <h3 className="font-semibold text-[var(--color-cream)] text-sm sm:text-base">
+                    {viewMode === 'tab' ? 'Tablature' : 'Fretboard'}
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-[var(--color-primary-light)] hidden sm:block">
+                    {viewMode === 'tab' ? 'Follow the highlighted notes' : 'Vista del diapasón'}
+                  </p>
                 </div>
               </div>
               
-              {/* Note Counter */}
-              <div className="font-mono text-xs sm:text-sm bg-[var(--color-primary-deep)] px-2 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg border border-[var(--color-primary-medium)]">
-                <span className="text-[var(--color-gold)]">{currentNoteIndex >= 0 ? currentNoteIndex + 1 : 0}</span>
-                <span className="text-[var(--color-primary-light)]"> / {tabData.length}</span>
+              {/* View Toggle Buttons */}
+              <div className="flex items-center gap-1 sm:gap-2">
+                <button
+                  onClick={() => setViewMode('tab')}
+                  className={`
+                    flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl
+                    font-medium text-[10px] sm:text-xs transition-all duration-200
+                    ${viewMode === 'tab'
+                      ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]'
+                      : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50'
+                    }
+                  `}
+                >
+                  <List className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Tab</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('fretboard')}
+                  className={`
+                    flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl
+                    font-medium text-[10px] sm:text-xs transition-all duration-200
+                    ${viewMode === 'fretboard'
+                      ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]'
+                      : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50'
+                    }
+                  `}
+                >
+                  <Guitar className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Diapasón</span>
+                </button>
+                
+                {/* Note Counter */}
+                <div className="font-mono text-xs sm:text-sm bg-[var(--color-primary-deep)] px-2 sm:px-4 py-1 sm:py-2 rounded-md sm:rounded-lg border border-[var(--color-primary-medium)] ml-1 sm:ml-2">
+                  <span className="text-[var(--color-gold)]">{currentNoteIndex >= 0 ? currentNoteIndex + 1 : 0}</span>
+                  <span className="text-[var(--color-primary-light)]"> / {tabData.length}</span>
+                </div>
               </div>
             </div>
           </div>
 
+          {/* Conditional View Rendering */}
+          {viewMode === 'fretboard' ? (
+            <FretboardView 
+              tabData={tabData} 
+              currentNoteIndex={currentNoteIndex}
+              currentMeasure={currentMeasure}
+            />
+          ) : (
+          <>
           {/* Tablature - Desktop View */}
           <div className="hidden md:block p-8 overflow-x-auto">
             <div className="min-w-[800px]">
@@ -669,6 +722,8 @@ const BassTrainer = () => {
               </div>
             </div>
           </div>
+          </>
+          )}
         </div>
 
         {/* Control Panel */}
