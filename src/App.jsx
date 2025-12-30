@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import {
   Play,
   Square,
@@ -22,6 +22,14 @@ import {
 } from "lucide-react";
 import Footer from "./components/Footer";
 import FretboardView from "./components/FretboardView";
+import ExerciseSelector from "./components/ExerciseSelector";
+import { 
+  PATTERNS, 
+  generateTabData, 
+  formatNoteName,
+  getHeaderInfo,
+  DEFAULT_EXERCISE 
+} from "./data/exerciseLibrary";
 
 const BassTrainer = () => {
   // Estados para la UI
@@ -43,6 +51,12 @@ const BassTrainer = () => {
   const [isNotesMuted, setIsNotesMuted] = useState(false); // Mutear notas para practicar solo con metrónomo
   const [viewMode, setViewMode] = useState('tab'); // 'tab' or 'fretboard'
   const [isCountdownEnabled, setIsCountdownEnabled] = useState(true); // Toggle para activar/desactivar countdown
+  
+  // Exercise selection states
+  const [selectedPattern, setSelectedPattern] = useState(DEFAULT_EXERCISE.patternId);
+  const [selectedRoot, setSelectedRoot] = useState(DEFAULT_EXERCISE.rootNote);
+  const [secondPattern, setSecondPattern] = useState(DEFAULT_EXERCISE.secondPatternId);
+  const [secondRoot, setSecondRoot] = useState(DEFAULT_EXERCISE.secondRootNote);
   
   // Theme state with localStorage persistence
   const [theme, setTheme] = useState(() => {
@@ -103,35 +117,27 @@ const BassTrainer = () => {
     E: 41.2,
   };
 
-  // Datos de la tablatura (Arpegios Emaj11 y Fm11 en tresillos)
-  const tabData = [
-    // Emaj11
-    { string: "E", fret: 0, id: 0 },
-    { string: "E", fret: 4, id: 1 },
-    { string: "A", fret: 2, id: 2 },
-    { string: "D", fret: 1, id: 3 },
-    { string: "D", fret: 4, id: 4 },
-    { string: "G", fret: 2, id: 5 },
-    { string: "G", fret: 2, id: 6 },
-    { string: "D", fret: 4, id: 7 },
-    { string: "D", fret: 1, id: 8 },
-    { string: "A", fret: 2, id: 9 },
-    { string: "E", fret: 4, id: 10 },
-    { string: "E", fret: 0, id: 11 },
-    // Fm11
-    { string: "E", fret: 1, id: 12 },
-    { string: "E", fret: 4, id: 13 },
-    { string: "A", fret: 3, id: 14 },
-    { string: "D", fret: 1, id: 15 },
-    { string: "D", fret: 5, id: 16 },
-    { string: "G", fret: 3, id: 17 },
-    { string: "G", fret: 3, id: 18 },
-    { string: "D", fret: 5, id: 19 },
-    { string: "D", fret: 1, id: 20 },
-    { string: "A", fret: 3, id: 21 },
-    { string: "E", fret: 4, id: 22 },
-    { string: "E", fret: 1, id: 23 },
-  ];
+  // Dynamic tab data generation based on selected exercises
+  const tabData = useMemo(() => {
+    const measure1 = generateTabData(selectedPattern, selectedRoot);
+    const measure2 = generateTabData(secondPattern, secondRoot);
+    
+    // Combine both measures with correct IDs
+    const combined = [
+      ...measure1,
+      ...measure2.map((note, idx) => ({
+        ...note,
+        id: measure1.length + idx
+      }))
+    ];
+    
+    return combined;
+  }, [selectedPattern, selectedRoot, secondPattern, secondRoot]);
+
+  // Dynamic header info based on selected exercises
+  const headerInfo = useMemo(() => {
+    return getHeaderInfo(selectedPattern, secondPattern);
+  }, [selectedPattern, secondPattern]);
 
   // Inicialización del AudioContext (solo una vez)
   useEffect(() => {
@@ -142,6 +148,11 @@ const BassTrainer = () => {
       if (audioContextRef.current) audioContextRef.current.close();
     };
   }, []);
+
+  // Sync tabData with notesRef when exercise selection changes
+  useEffect(() => {
+    notesRef.current = tabData;
+  }, [tabData]);
 
   // Metronome click sound - now plays on every triplet
   const playMetronomeClick = (time, isDownbeat, isFirstOfBeat) => {
@@ -454,7 +465,14 @@ const BassTrainer = () => {
                 Bass Academy · 2026
               </p>
               <h1 className="font-[var(--font-display)] text-xl sm:text-3xl md:text-4xl font-bold text-[var(--color-cream)]">
-                John Patitucci
+                {headerInfo.type === 'artist' ? headerInfo.displayName : (
+                  <span className="flex items-center gap-2">
+                    {headerInfo.displayName}
+                    <span className="text-sm sm:text-lg text-[var(--color-gold)]">
+                      {'★'.repeat(headerInfo.difficulty || 3)}
+                    </span>
+                  </span>
+                )}
               </h1>
             </div>
           </div>
@@ -462,7 +480,7 @@ const BassTrainer = () => {
           {/* Main Title */}
           <div className="text-center mb-4 sm:mb-6">
             <h2 className="font-[var(--font-display)] text-lg sm:text-2xl md:text-3xl font-semibold text-gradient-gold mb-1 sm:mb-2">
-              Modern Jazz Bass Technique
+              {headerInfo.subtitle}
             </h2>
             <p className="text-[var(--color-primary-light)] text-xs sm:text-base md:text-lg">
               Interactive Arpeggio Study
@@ -540,6 +558,19 @@ const BassTrainer = () => {
           </div>
         )}
 
+        {/* Exercise Selector */}
+        <ExerciseSelector
+          selectedPattern={selectedPattern}
+          setSelectedPattern={setSelectedPattern}
+          selectedRoot={selectedRoot}
+          setSelectedRoot={setSelectedRoot}
+          secondPattern={secondPattern}
+          setSecondPattern={setSecondPattern}
+          secondRoot={secondRoot}
+          setSecondRoot={setSecondRoot}
+          isPlaying={isPlaying || isCountingDown}
+        />
+
         {/* Educational Info Panel - Hidden on very small screens */}
         <div className="hidden sm:block glass-strong rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6 animate-fadeInUp" style={{animationDelay: "0.1s"}}>
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
@@ -564,7 +595,7 @@ const BassTrainer = () => {
               <div>
                 <h3 className="font-semibold text-[var(--color-cream)] mb-1 text-sm sm:text-base">Chords</h3>
                 <p className="text-xs sm:text-sm text-[var(--color-primary-light)]">
-                  <span className="font-mono text-[var(--color-gold)]">Emaj11</span> → <span className="font-mono text-[var(--color-gold)]">Fm11</span>
+                  <span className="font-mono text-[var(--color-gold)]">{formatNoteName(selectedRoot)}{PATTERNS[selectedPattern]?.name}</span> → <span className="font-mono text-[var(--color-gold)]">{formatNoteName(secondRoot)}{PATTERNS[secondPattern]?.name}</span>
                 </p>
               </div>
             </div>
@@ -672,26 +703,26 @@ const BassTrainer = () => {
             <div className="flex pl-14 mt-6 gap-4">
               <div className="flex-1 glass rounded-xl p-3 text-center border-l-4 border-[var(--color-gold)]">
                 <p className="text-xs uppercase tracking-wider text-[var(--color-primary-light)] mb-1">Measure 1</p>
-                <p className="font-mono font-bold text-[var(--color-gold)]">Emaj11</p>
+                <p className="font-mono font-bold text-[var(--color-gold)]">{formatNoteName(selectedRoot)}{PATTERNS[selectedPattern]?.name}</p>
               </div>
               <div className="w-8 flex items-center justify-center">
                 <ChevronRight className="w-6 h-6 text-[var(--color-primary-medium)]" />
               </div>
               <div className="flex-1 glass rounded-xl p-3 text-center border-l-4 border-[var(--color-info)]">
                 <p className="text-xs uppercase tracking-wider text-[var(--color-primary-light)] mb-1">Measure 2</p>
-                <p className="font-mono font-bold text-[var(--color-info)]">Fm11</p>
+                <p className="font-mono font-bold text-[var(--color-info)]">{formatNoteName(secondRoot)}{PATTERNS[secondPattern]?.name}</p>
               </div>
             </div>
           </div>
 
           {/* Tablature - Mobile Grid View (No Scroll!) */}
           <div className="md:hidden p-2 sm:p-4">
-            {/* Emaj11 Section - Tablatura Compacta */}
+            {/* Measure 1 Section - Tablatura Compacta */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-6 rounded-full bg-[var(--color-gold)]" />
-                  <span className="font-mono font-bold text-[var(--color-gold)] text-base sm:text-lg">Emaj11</span>
+                  <span className="font-mono font-bold text-[var(--color-gold)] text-base sm:text-lg">{formatNoteName(selectedRoot)}{PATTERNS[selectedPattern]?.name}</span>
                 </div>
                 <span className="text-[10px] sm:text-xs text-[var(--color-primary-light)] uppercase tracking-wider">Compás 1</span>
               </div>
@@ -745,12 +776,12 @@ const BassTrainer = () => {
               <ChevronRight className="w-5 h-5 text-[var(--color-primary-medium)] rotate-90" />
             </div>
 
-            {/* Fm11 Section - Tablatura Compacta */}
+            {/* Measure 2 Section - Tablatura Compacta */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-6 rounded-full bg-[var(--color-info)]" />
-                  <span className="font-mono font-bold text-[var(--color-info)] text-base sm:text-lg">Fm11</span>
+                  <span className="font-mono font-bold text-[var(--color-info)] text-base sm:text-lg">{formatNoteName(secondRoot)}{PATTERNS[secondPattern]?.name}</span>
                 </div>
                 <span className="text-[10px] sm:text-xs text-[var(--color-primary-light)] uppercase tracking-wider">Compás 2</span>
               </div>
