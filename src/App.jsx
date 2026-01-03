@@ -181,6 +181,28 @@ const BassTrainer = () => {
     isCountdownEnabled,
   } = playerState;
 
+  // Global keyboard navigation for accessibility
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      // Ignore if typing in an input or select element
+      const tagName = event.target.tagName;
+      if (tagName === 'INPUT' || tagName === 'SELECT' || tagName === 'TEXTAREA') return;
+      
+      // Space key toggles play/pause
+      if (event.code === 'Space') {
+        event.preventDefault();
+        if (isPlaying || isCountingDown) {
+          handleStop();
+        } else {
+          handlePlay();
+        }
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPlaying, isCountingDown, handlePlay, handleStop]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-4 sm:py-8 px-2 sm:px-4 font-[var(--font-body)]">
       {/* PWA Components */}
@@ -265,9 +287,12 @@ const BassTrainer = () => {
               <div className="flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={() => setViewMode(VIEW_MODES.TAB)}
+                  aria-label="Tablature view"
+                  aria-pressed={viewMode === VIEW_MODES.TAB}
                   className={`
                     flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl
                     font-medium text-[10px] sm:text-xs transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${viewMode === VIEW_MODES.TAB
                       ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]'
                       : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50'
@@ -279,9 +304,12 @@ const BassTrainer = () => {
                 </button>
                 <button
                   onClick={() => setViewMode(VIEW_MODES.FRETBOARD)}
+                  aria-label="Fretboard view"
+                  aria-pressed={viewMode === VIEW_MODES.FRETBOARD}
                   className={`
                     flex items-center gap-1 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl
                     font-medium text-[10px] sm:text-xs transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${viewMode === VIEW_MODES.FRETBOARD
                       ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]'
                       : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50'

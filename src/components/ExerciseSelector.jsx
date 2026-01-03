@@ -62,6 +62,7 @@ const ExerciseSelector = ({
                 value={selectedPattern}
                 onChange={(e) => setSelectedPattern(e.target.value)}
                 disabled={isPlaying}
+                aria-label="Measure 1 pattern"
                 className="w-full appearance-none bg-[var(--color-primary-dark)] text-[var(--color-cream)] 
                          rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 pr-10 text-xs sm:text-sm font-medium
                          border border-[var(--color-primary-medium)] 
@@ -88,15 +89,19 @@ const ExerciseSelector = ({
             <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1.5 block uppercase tracking-wider">
               Root Note
             </label>
-            <div className="grid grid-cols-6 gap-1 sm:gap-1.5">
+            <div className="grid grid-cols-6 gap-1 sm:gap-1.5" role="radiogroup" aria-label="Measure 1 root note">
               {NOTES.map(note => (
                 <button
                   key={note}
                   onClick={() => setSelectedRoot(note)}
                   disabled={isPlaying}
+                  role="radio"
+                  aria-checked={selectedRoot === note}
+                  aria-label={formatNoteName(note)}
                   className={`
                     py-1.5 sm:py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold
                     transition-all duration-200 border
+                    focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${selectedRoot === note
                       ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)] border-[var(--color-gold-light)] scale-105'
                       : 'bg-[var(--color-primary-dark)] text-[var(--color-cream)] border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]/50'
@@ -132,6 +137,7 @@ const ExerciseSelector = ({
                 value={secondPattern}
                 onChange={(e) => setSecondPattern(e.target.value)}
                 disabled={isPlaying}
+                aria-label="Measure 2 pattern"
                 className="w-full appearance-none bg-[var(--color-primary-dark)] text-[var(--color-cream)] 
                          rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 pr-10 text-xs sm:text-sm font-medium
                          border border-[var(--color-primary-medium)] 
@@ -158,15 +164,19 @@ const ExerciseSelector = ({
             <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1.5 block uppercase tracking-wider">
               Root Note
             </label>
-            <div className="grid grid-cols-6 gap-1 sm:gap-1.5">
+            <div className="grid grid-cols-6 gap-1 sm:gap-1.5" role="radiogroup" aria-label="Measure 2 root note">
               {NOTES.map(note => (
                 <button
                   key={note}
                   onClick={() => setSecondRoot(note)}
                   disabled={isPlaying}
+                  role="radio"
+                  aria-checked={secondRoot === note}
+                  aria-label={formatNoteName(note)}
                   className={`
                     py-1.5 sm:py-2 rounded-lg font-mono text-[10px] sm:text-xs font-bold
                     transition-all duration-200 border
+                    focus:outline-none focus:ring-2 focus:ring-[var(--color-info)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${secondRoot === note
                       ? 'bg-[var(--color-info)] text-[var(--color-primary-deep)] border-[var(--color-info)] scale-105'
                       : 'bg-[var(--color-primary-dark)] text-[var(--color-cream)] border-[var(--color-primary-medium)] hover:border-[var(--color-info)]/50'

@@ -25,7 +25,10 @@ function TempoControl({ tempo, setTempo }) {
           step={TEMPO_CONFIG.step}
           value={tempo}
           onChange={(e) => setTempo(Number(e.target.value))}
+          aria-label="Tempo control"
+          aria-valuetext={`${tempo} beats per minute`}
           className="w-full h-2 sm:h-3 bg-[var(--color-primary-dark)] rounded-full appearance-none cursor-pointer
+                   focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-2 focus:ring-offset-[var(--color-primary-deep)]
                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 
                    sm:[&::-webkit-slider-thumb]:w-6 sm:[&::-webkit-slider-thumb]:h-6 
                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[var(--color-gold)] 
