@@ -4,10 +4,9 @@
  */
 
 import React from 'react';
-import { Volume2, Music } from 'lucide-react';
-import { TEMPO_CONFIG } from '../config/audioConfig.js';
+import { TEMPO_CONFIG } from '../../config/audioConfig.js';
 
-export function TempoControl({ tempo, setTempo }) {
+function TempoControl({ tempo, setTempo }) {
   return (
     <div className="w-full">
       <div className="glass rounded-lg sm:rounded-xl md:rounded-2xl p-3 sm:p-4 md:p-5 border border-[var(--color-primary-medium)]">
@@ -48,3 +47,5 @@ export function TempoControl({ tempo, setTempo }) {
     </div>
   );
 }
+
+export default TempoControl;

@@ -1,9 +1,12 @@
-
 /**
  * VolumeControl Component - Bass Academy
  * Mobile-first responsive volume sliders
  */
-export function VolumeControl({
+
+import React from 'react';
+import { Volume2, Music } from 'lucide-react';
+
+function VolumeControl({
   bassVolume,
   setBassVolume,
   metronomeVolume,
@@ -72,3 +75,5 @@ export function VolumeControl({
     </div>
   );
 }
+
+export default VolumeControl;

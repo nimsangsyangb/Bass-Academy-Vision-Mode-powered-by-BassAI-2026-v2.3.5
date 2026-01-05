@@ -6,8 +6,8 @@
 import React from 'react';
 import BeatIndicator from './BeatIndicator.jsx';
 import PlaybackControls from './PlaybackControls.jsx';
-import { TempoControl } from './TempoControl.jsx';
-import { VolumeControl } from './VolumeControl.jsx';
+import TempoControl from './TempoControl.jsx';
+import VolumeControl from './VolumeControl.jsx';
 
 function ControlPanel({
   // Beat state
