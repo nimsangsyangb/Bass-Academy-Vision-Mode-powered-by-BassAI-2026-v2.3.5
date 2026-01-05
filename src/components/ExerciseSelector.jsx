@@ -9,7 +9,7 @@ import {
 } from '../data/exerciseLibrary';
 
 /**
- * ExerciseSelector - Premium UI for selecting arpeggio patterns and root notes
+ * ExerciseSelector - Mobile-first responsive design
  */
 const ExerciseSelector = ({ 
   selectedPattern, 
@@ -26,42 +26,41 @@ const ExerciseSelector = ({
   const patternsByCategory = getPatternsByCategory();
   
   // Filter categories based on selectedCategory
-  // If a category is selected, only show that category's patterns
   const filteredCategories = selectedCategory 
     ? CATEGORIES.filter(cat => cat.id === selectedCategory)
     : CATEGORIES;
 
   return (
-    <div className="glass-strong rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 mb-4 sm:mb-6 animate-fadeInUp" style={{animationDelay: "0.15s"}}>
-      {/* Section Header */}
-      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-5">
-        <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-lg sm:rounded-xl gradient-gold flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-[var(--color-primary-deep)]" />
+    <div className="glass-strong rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-4 sm:mb-5 md:mb-6 animate-fadeInUp" style={{animationDelay: "0.15s"}}>
+      {/* Section Header - Mobile Optimized */}
+      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 md:mb-5">
+        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl gradient-gold flex items-center justify-center flex-shrink-0">
+          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--color-primary-deep)]" />
         </div>
         <div>
-          <h3 className="font-semibold text-[var(--color-cream)] text-xs sm:text-sm md:text-base">Exercise Library</h3>
-          <p className="text-[9px] sm:text-[10px] md:text-xs text-[var(--color-primary-light)]">
+          <h3 className="font-semibold text-[var(--color-cream)] text-sm sm:text-base">Exercise Library</h3>
+          <p className="text-[10px] sm:text-xs text-[var(--color-primary-light)]">
             Select arpeggio type and root note
           </p>
         </div>
       </div>
 
-      {/* Two-measure exercise selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      {/* Two-measure exercise selection - Mobile Optimized */}
+      <div className="flex flex-col gap-3 sm:gap-4 md:grid md:grid-cols-2">
         {/* Measure 1 */}
-        <div className="glass rounded-lg sm:rounded-xl p-2.5 sm:p-4 border-l-3 sm:border-l-4 border-[var(--color-gold)]">
+        <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-3 sm:border-l-4 border-[var(--color-gold)]">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-            <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[var(--color-primary-light)] font-medium">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--color-primary-light)] font-medium">
               Measure 1
             </span>
-            <span className="text-[var(--color-gold)] font-mono font-bold text-xs sm:text-sm">
+            <span className="text-[var(--color-gold)] font-mono font-bold text-xs sm:text-sm truncate">
               {formatNoteName(selectedRoot)}{PATTERNS[selectedPattern]?.name}
             </span>
           </div>
 
           {/* Pattern Selector */}
           <div className="mb-2.5 sm:mb-3">
-            <label className="text-[9px] sm:text-[10px] md:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
+            <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
               Pattern
             </label>
             <div className="relative">
@@ -71,7 +70,7 @@ const ExerciseSelector = ({
                 disabled={isPlaying}
                 aria-label="Measure 1 pattern"
                 className="w-full appearance-none bg-[var(--color-primary-dark)] text-[var(--color-cream)] 
-                         rounded-md sm:rounded-lg px-2.5 sm:px-4 py-1.5 sm:py-2.5 pr-8 sm:pr-10 text-[11px] sm:text-sm font-medium
+                         rounded-md sm:rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 pr-9 sm:pr-10 text-xs sm:text-sm font-medium
                          border border-[var(--color-primary-medium)] 
                          focus:border-[var(--color-gold)] focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)]/20
                          disabled:opacity-50 disabled:cursor-not-allowed
@@ -89,13 +88,13 @@ const ExerciseSelector = ({
                   )
                 ))}
               </select>
-              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--color-primary-light)] pointer-events-none" />
+              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-primary-light)] pointer-events-none" />
             </div>
           </div>
 
           {/* Root Note Selector */}
           <div>
-            <label className="text-[9px] sm:text-[10px] md:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
+            <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
               Root Note
             </label>
             <div className="grid grid-cols-6 gap-1 sm:gap-1.5" role="radiogroup" aria-label="Measure 1 root note">
@@ -108,7 +107,7 @@ const ExerciseSelector = ({
                   aria-checked={selectedRoot === note}
                   aria-label={formatNoteName(note)}
                   className={`
-                    py-1 sm:py-1.5 md:py-2 rounded-md sm:rounded-lg font-mono text-[9px] sm:text-[11px] md:text-xs font-bold
+                    py-1.5 sm:py-2 rounded-md sm:rounded-lg font-mono text-[10px] sm:text-xs font-bold
                     transition-all duration-200 border
                     focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${selectedRoot === note
@@ -126,19 +125,19 @@ const ExerciseSelector = ({
         </div>
 
         {/* Measure 2 */}
-        <div className="glass rounded-lg sm:rounded-xl p-2.5 sm:p-4 border-l-3 sm:border-l-4 border-[var(--color-info)]">
+        <div className="glass rounded-lg sm:rounded-xl p-3 sm:p-4 border-l-3 sm:border-l-4 border-[var(--color-info)]">
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
-            <span className="text-[9px] sm:text-xs uppercase tracking-wider text-[var(--color-primary-light)] font-medium">
+            <span className="text-[10px] sm:text-xs uppercase tracking-wider text-[var(--color-primary-light)] font-medium">
               Measure 2
             </span>
-            <span className="text-[var(--color-info)] font-mono font-bold text-xs sm:text-sm">
+            <span className="text-[var(--color-info)] font-mono font-bold text-xs sm:text-sm truncate">
               {formatNoteName(secondRoot)}{PATTERNS[secondPattern]?.name}
             </span>
           </div>
 
           {/* Pattern Selector */}
           <div className="mb-2.5 sm:mb-3">
-            <label className="text-[9px] sm:text-[10px] md:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
+            <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
               Pattern
             </label>
             <div className="relative">
@@ -148,7 +147,7 @@ const ExerciseSelector = ({
                 disabled={isPlaying}
                 aria-label="Measure 2 pattern"
                 className="w-full appearance-none bg-[var(--color-primary-dark)] text-[var(--color-cream)] 
-                         rounded-md sm:rounded-lg px-2.5 sm:px-4 py-1.5 sm:py-2.5 pr-8 sm:pr-10 text-[11px] sm:text-sm font-medium
+                         rounded-md sm:rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 pr-9 sm:pr-10 text-xs sm:text-sm font-medium
                          border border-[var(--color-primary-medium)] 
                          focus:border-[var(--color-info)] focus:outline-none focus:ring-2 focus:ring-[var(--color-info)]/20
                          disabled:opacity-50 disabled:cursor-not-allowed
@@ -166,13 +165,13 @@ const ExerciseSelector = ({
                   )
                 ))}
               </select>
-              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-[var(--color-primary-light)] pointer-events-none" />
+              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-primary-light)] pointer-events-none" />
             </div>
           </div>
 
           {/* Root Note Selector */}
           <div>
-            <label className="text-[9px] sm:text-[10px] md:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
+            <label className="text-[10px] sm:text-xs text-[var(--color-primary-light)] mb-1 sm:mb-1.5 block uppercase tracking-wider">
               Root Note
             </label>
             <div className="grid grid-cols-6 gap-1 sm:gap-1.5" role="radiogroup" aria-label="Measure 2 root note">
@@ -185,7 +184,7 @@ const ExerciseSelector = ({
                   aria-checked={secondRoot === note}
                   aria-label={formatNoteName(note)}
                   className={`
-                    py-1 sm:py-1.5 md:py-2 rounded-md sm:rounded-lg font-mono text-[9px] sm:text-[11px] md:text-xs font-bold
+                    py-1.5 sm:py-2 rounded-md sm:rounded-lg font-mono text-[10px] sm:text-xs font-bold
                     transition-all duration-200 border
                     focus:outline-none focus:ring-2 focus:ring-[var(--color-info)] focus:ring-offset-1 focus:ring-offset-[var(--color-primary-deep)]
                     ${secondRoot === note
@@ -203,15 +202,15 @@ const ExerciseSelector = ({
         </div>
       </div>
 
-      {/* Pattern Info */}
-      <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
-        <div className="glass rounded-lg px-3 py-1.5 flex items-center gap-2">
-          <Music className="w-3.5 h-3.5 text-[var(--color-gold)]" />
-          <span className="text-[10px] sm:text-xs text-[var(--color-primary-light)]">
+      {/* Pattern Info - Mobile Optimized */}
+      <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3">
+        <div className="glass rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center gap-1.5 sm:gap-2">
+          <Music className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[var(--color-gold)] flex-shrink-0" />
+          <span className="text-[10px] sm:text-xs text-[var(--color-primary-light)] line-clamp-1">
             {PATTERNS[selectedPattern]?.description}
           </span>
         </div>
-        <div className="glass rounded-lg px-3 py-1.5">
+        <div className="glass rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 flex items-center justify-center sm:justify-start">
           <span className="text-[10px] sm:text-xs text-[var(--color-primary-light)]">
             Difficulty: 
             <span className="ml-1 text-[var(--color-gold)]">

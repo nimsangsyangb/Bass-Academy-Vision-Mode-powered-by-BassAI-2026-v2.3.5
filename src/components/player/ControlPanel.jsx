@@ -1,13 +1,13 @@
 /**
  * ControlPanel Component - Bass Trainer
- * Wrapper component composing BeatIndicator, PlaybackControls, TempoControl, and VolumeControl
+ * Mobile-first responsive control wrapper
  */
 
 import React from 'react';
 import BeatIndicator from './BeatIndicator.jsx';
 import PlaybackControls from './PlaybackControls.jsx';
-import TempoControl from './TempoControl.jsx';
-import VolumeControl from './VolumeControl.jsx';
+import { TempoControl } from './TempoControl.jsx';
+import { VolumeControl } from './VolumeControl.jsx';
 
 function ControlPanel({
   // Beat state
@@ -36,10 +36,10 @@ function ControlPanel({
 }) {
   return (
     <div 
-      className="glass-strong rounded-xl sm:rounded-2xl p-3 sm:p-6 animate-fadeInUp" 
+      className="glass-strong rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-6 animate-fadeInUp" 
       style={{animationDelay: "0.3s"}}
     >
-      <div className="flex flex-col gap-4 sm:gap-6">
+      <div className="flex flex-col gap-3 sm:gap-4 md:gap-6">
         {/* Beat Indicator */}
         <BeatIndicator 
           currentBeat={currentBeat} 
@@ -80,4 +80,3 @@ function ControlPanel({
 }
 
 export default ControlPanel;
-
