@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/Version-2.1.0-C9A554?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.3.0-C9A554?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
@@ -21,14 +21,13 @@ A comprehensive bass practice platform featuring a **selectable exercise library
 
 Practice arpeggios, scales, and patterns with real-time tablature, fretboard visualization, and Web Audio synthesis - all transposable to any key.
 
-## 🆕 What's New in v2.1.0
+## 🆕 What's New in v2.3.0
 
-- 🏠 **Artist Selection Home Screen** - Choose your favorite bass legend to study
-- 🎨 **Multi-Artist Library** - Patterns from Patitucci, Wooten, Flea & Jaco
-- 📱 **Improved Responsive Design** - Optimized spacing and typography for all devices
-- 🔧 **Navigation & Back Button** - Easy transition between home and trainer
-- 🛡️ **Defensive Error Handling** - Null checks to prevent crashes
-- ⚡ **Cache Management** - Service Worker v2.0.0 for better updates
+- 🔍 **Fullscreen Practice Mode** - Immersive tablature view with integrated controls
+- 🎚️ **In-Fullscreen Controls** - Play/Stop, Tempo, and Volume sliders in fullscreen
+- ⌨️ **Keyboard Shortcuts** - Space for Play/Pause, ESC to exit fullscreen
+- 📱 **Mobile Landscape Optimized** - Perfect for horizontal phone/tablet practice
+- 🌐 **Cross-Browser Fullscreen API** - Works on Chrome, Firefox, Safari, Edge
 
 ## ✨ Features
 
@@ -36,6 +35,7 @@ Practice arpeggios, scales, and patterns with real-time tablature, fretboard vis
 |---------|-------------|
 | 🏠 **Artist Home Screen** | Select from legendary bassists to access their specific exercises |
 | 📚 **Exercise Library** | 10+ patterns: Linear 11ths, Double Thumb, Slap, Ghost Notes, and more |
+| 🔍 **Fullscreen Practice Mode** | Immersive view with integrated Play/Stop, Tempo, and Volume controls |
 | 🎹 **Root Transposition** | Practice any pattern in all 12 chromatic keys |
 | 🎯 **Interactive Tablature** | Real-time visual feedback highlighting notes as they play |
 | 🎸 **Fretboard View** | Alternative visualization showing the bass neck |
@@ -100,6 +100,7 @@ src/
 │   ├── useBassAudio.js       # Audio engine wrapper
 │   ├── useAudioScheduler.js  # Note scheduling with lookahead
 │   ├── usePlayerState.js     # State management with FSM
+│   ├── useFullscreen.js      # Cross-browser Fullscreen API
 │   └── usePWA.js             # PWA installation & updates
 ├── services/
 │   └── AudioService.js       # Pure JS audio synthesis
@@ -152,27 +153,27 @@ The app will be available at `http://localhost:5173`
 
 ## 🗺️ Roadmap
 
-### ✅ Completed (v2.1.0)
+### ✅ Completed (v2.3.0)
+- [x] **Fullscreen practice mode** with integrated controls
+- [x] **Keyboard shortcuts** (Space: play/pause, ESC: exit)
+- [x] **Mobile landscape optimization** for practice sessions
+- [x] **Cross-browser Fullscreen API** support
 - [x] **Artist selection home screen**
 - [x] **Multi-artist exercise library** (Patitucci, Wooten, Flea, Jaco)
 - [x] **Improved responsive design** for mobile
-- [x] **Navigation system** with back button
-- [x] **Defensive error handling**
 - [x] Exercise library with selectable patterns
 - [x] Root note transposition (12 keys)
 - [x] Metronome with triplet subdivisions
 - [x] Fretboard visualization mode
 - [x] Light/Dark theme toggle
 - [x] PWA support with offline use
-- [x] Modular architecture
 
-### 🔜 Upcoming (v2.2.0)
+### 🔜 Upcoming (v2.4.0)
 - [ ] Scale patterns (Major, Minor, Modes)
 - [ ] Practice session statistics
 - [ ] Progress tracking with LocalStorage
 - [ ] Custom exercise builder
 - [ ] Audio recording for self-review
-- [ ] Unit tests with Vitest
 
 ## 🎓 Resources
 
@@ -190,6 +191,6 @@ MIT © 2026
 
 **Made with ❤️ for bass players**
 
-**Bass Academy · 2026 · v2.1.0**
+**Bass Academy · 2026 · v2.3.0**
 
 </div>
