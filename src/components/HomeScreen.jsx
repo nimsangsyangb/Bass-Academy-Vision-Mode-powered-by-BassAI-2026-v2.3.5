@@ -1,5 +1,6 @@
 import React from 'react';
 import { Music } from 'lucide-react';
+import InteractiveDots from './ui/InteractiveDots';
 
 /**
  * Artist data for HomeScreen
@@ -106,37 +107,48 @@ function ArtistCard({ artist, onClick, index }) {
  */
 function HomeScreen({ onSelectArtist }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 animate-fadeIn bg-[var(--color-bg-dark)]">
+    <div className="min-h-screen relative overflow-hidden bg-[var(--color-primary-deep)]">
+      {/* Interactive Dots Background */}
+      <InteractiveDots 
+        dotColor="#3B82F6"
+        gridSpacing={30}
+        animationSpeed={0.005}
+        removeWaveLine={true}
+      />
       
-      {/* Header - Mobile Optimized */}
-      <header className="text-center mb-6 sm:mb-10 md:mb-14 relative z-10 px-2">
-        <div className="inline-flex items-center justify-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl gradient-gold mb-4 sm:mb-6 shadow-2xl shadow-[var(--color-gold)]/20">
-          <Music className="text-[var(--color-primary-deep)] w-8 h-8 sm:w-10 sm:h-10" />
+      {/* Main Content */}
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-3 sm:p-6 md:p-8 animate-fadeIn">
+      
+        {/* Header - Mobile Optimized */}
+        <header className="text-center mb-6 sm:mb-10 md:mb-14 relative z-10 px-2">
+          <div className="inline-flex items-center justify-center p-3 sm:p-4 rounded-2xl sm:rounded-3xl gradient-gold mb-4 sm:mb-6 shadow-2xl shadow-[var(--color-gold)]/20">
+            <Music className="text-[var(--color-primary-deep)] w-8 h-8 sm:w-10 sm:h-10" />
+          </div>
+          <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-cream)] mb-2 tracking-tight leading-tight">
+            Bass<span className="text-[var(--color-gold)]">Academy</span>
+          </h1>
+          <p className="text-[var(--color-primary-light)] text-sm sm:text-lg md:text-xl font-light tracking-widest uppercase opacity-80">
+            Master the Legends · 2026
+          </p>
+        </header>
+        
+        {/* Artist Grid - Mobile Optimized */}
+        <div className="max-w-6xl w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4 relative z-10">
+          {ARTISTS.map((artist, index) => (
+            <ArtistCard
+              key={artist.id}
+              artist={artist}
+              onClick={onSelectArtist}
+              index={index}
+            />
+          ))}
         </div>
-        <h1 className="font-[var(--font-display)] text-4xl sm:text-5xl md:text-6xl font-bold text-[var(--color-cream)] mb-2 tracking-tight leading-tight">
-          Bass<span className="text-[var(--color-gold)]">Academy</span>
-        </h1>
-        <p className="text-[var(--color-primary-light)] text-sm sm:text-lg md:text-xl font-light tracking-widest uppercase opacity-80">
-          Master the Legends · 2026
-        </p>
-      </header>
-      
-      {/* Artist Grid - Mobile Optimized */}
-      <div className="max-w-6xl w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 px-2 sm:px-4">
-        {ARTISTS.map((artist, index) => (
-          <ArtistCard
-            key={artist.id}
-            artist={artist}
-            onClick={onSelectArtist}
-            index={index}
-          />
-        ))}
+        
+        {/* Footer hint - Mobile Optimized */}
+        <footer className="mt-8 sm:mt-12 md:mt-16 text-[var(--color-primary-light)] text-xs sm:text-sm opacity-50 px-4 text-center relative z-10">
+          Select an artist card to enter the practice room
+        </footer>
       </div>
-      
-      {/* Footer hint - Mobile Optimized */}
-      <footer className="mt-8 sm:mt-12 md:mt-16 text-[var(--color-primary-light)] text-xs sm:text-sm opacity-50 px-4 text-center">
-        Select an artist card to enter the practice room
-      </footer>
     </div>
   );
 }
