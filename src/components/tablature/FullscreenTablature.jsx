@@ -81,11 +81,27 @@ const FullscreenTablature = ({
         e.preventDefault();
         onPlayPause();
       }
+      // Desktop-only: G key to increase tempo by 5 BPM
+      if (!isMobile && (e.key === 'g' || e.key === 'G')) {
+        e.preventDefault();
+        const newTempo = Math.min(160, tempo + 5);
+        if (newTempo !== tempo) {
+          onTempoChange(newTempo);
+        }
+      }
+      // Desktop-only: F key to decrease tempo by 5 BPM
+      if (!isMobile && (e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        const newTempo = Math.max(40, tempo - 5);
+        if (newTempo !== tempo) {
+          onTempoChange(newTempo);
+        }
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onPlayPause]);
+  }, [onPlayPause, isMobile, tempo, onTempoChange]);
 
   const handleClose = async () => {
     await exitFullscreen();
