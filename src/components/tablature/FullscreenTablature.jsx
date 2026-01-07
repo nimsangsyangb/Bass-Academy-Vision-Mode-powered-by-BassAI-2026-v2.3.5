@@ -240,11 +240,13 @@ const FullscreenTablature = ({
         </div>
       </div>
 
-      {/* Keyboard Hints */}
-      <div className="keyboard-hints">
-        <span>Espacio: Play/Stop</span>
-        <span>ESC: Salir</span>
-      </div>
+      {/* Keyboard Hints - Solo desktop */}
+      {!isMobile && (
+        <div className="keyboard-hints">
+          <span>Espacio: Play/Stop</span>
+          <span>ESC: Salir</span>
+        </div>
+      )}
 
       {/* Root Note Popup */}
       <RootNotePopup
