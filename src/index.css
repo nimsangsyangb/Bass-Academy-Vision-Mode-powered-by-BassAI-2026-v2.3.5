@@ -278,3 +278,122 @@ body {
   background: var(--color-gold);
   color: var(--color-primary-deep);
 }
+
+/* ============================================
+   PRACTICE THEME (Night Mode - High Contrast)
+   Optimized for low-light conditions
+   ============================================ */
+[data-theme="practice"] {
+  /* Pure Black Background */
+  --color-primary-deep: #000000;
+  --color-primary-dark: #0A0A0A;
+  --color-primary-medium: #1A1A1A;
+  --color-primary-light: #888888;
+  
+  /* High Contrast Colors */
+  --color-cream: #FFFFFF;
+  --color-warm-white: #F0F0F0;
+  --color-charcoal: #1A1A1A;
+  
+  /* Bright Gold Active Notes */
+  --color-gold: #FFD700;
+  --color-gold-light: #FFE44D;
+  --color-gold-dark: #CC9900;
+  
+  /* Neon String Color */
+  --string-color: #00FF00;
+  
+  /* Active Note - Extra Bright */
+  --color-active: #FFD700;
+  --color-active-glow: rgba(255, 215, 0, 0.8);
+  
+  /* Info color - Brighter for contrast */
+  --color-info: #4DA6FF;
+  
+  /* Increased Base Font Size */
+  font-size: 120%;
+  
+  /* Override color scheme */
+  color-scheme: dark;
+  
+  /* Disable Glassmorphism - Pure solid backgrounds */
+  --glass-bg: rgba(0, 0, 0, 0.95);
+  --glass-border: rgba(255, 215, 0, 0.2);
+  --glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --glass-blur: blur(0);
+}
+
+[data-theme="practice"] body {
+  background: #000000;
+}
+
+[data-theme="practice"] .glass {
+  background: rgba(10, 10, 10, 0.95);
+  border-color: rgba(255, 215, 0, 0.15);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+[data-theme="practice"] .glass-strong {
+  background: rgba(10, 10, 10, 0.98);
+  border-color: rgba(255, 215, 0, 0.2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* Practice Theme - Active Note Glow */
+[data-theme="practice"] .tab-note-active {
+  font-size: 130%;
+  font-weight: 900;
+  text-shadow: 
+    0 0 10px var(--color-active-glow),
+    0 0 20px var(--color-active-glow),
+    0 0 30px var(--color-active-glow);
+}
+
+/* Practice Theme - String Lines (Neon Green) */
+[data-theme="practice"] .tab-string-line {
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0, 255, 0, 0.3) 20%, 
+    rgba(0, 255, 0, 0.5) 50%, 
+    rgba(0, 255, 0, 0.3) 80%, 
+    transparent 100%);
+}
+
+/* Practice Theme - Past Notes (Dimmed) */
+[data-theme="practice"] .tab-note-past {
+  opacity: 0.3;
+  color: #666666;
+}
+
+/* ============================================
+   BPM Pulse Animation
+   ============================================ */
+@keyframes pulse-tempo {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 8px var(--color-gold), 0 0 16px var(--color-gold);
+  }
+}
+
+/* ============================================
+   Progress Bar Animations
+   ============================================ */
+@keyframes progress-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px var(--color-active-glow);
+  }
+  50% {
+    box-shadow: 0 0 15px var(--color-active-glow), 0 0 25px var(--color-active-glow);
+  }
+}
+
+.progress-indicator-active {
+  animation: progress-glow 0.5s ease-in-out infinite;
+}

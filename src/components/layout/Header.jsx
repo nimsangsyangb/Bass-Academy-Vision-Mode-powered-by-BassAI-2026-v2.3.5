@@ -1,12 +1,19 @@
 /**
  * Header Component - Bass Trainer
- * Mobile-first responsive header
+ * Mobile-first responsive header with 3-way theme selector
  */
 
 import React from 'react';
-import { GraduationCap, Music, Sun, Moon } from 'lucide-react';
+import { GraduationCap, Music, Sun, Moon, Eye } from 'lucide-react';
 
-function Header({ headerInfo, isPlaying, isCountingDown, theme, toggleTheme }) {
+function Header({ headerInfo, isPlaying, isCountingDown, theme, onThemeChange }) {
+  // Theme options with labels and icons
+  const themeOptions = [
+    { id: 'dark', label: 'Dark', icon: Moon },
+    { id: 'light', label: 'Light', icon: Sun },
+    { id: 'practice', label: '🌙', ariaLabel: 'High contrast practice mode' },
+  ];
+
   return (
     <header className="mb-4 sm:mb-8 md:mb-10 animate-fadeInUp text-center">
       {/* Institution Badge - Mobile Optimized */}
@@ -43,7 +50,7 @@ function Header({ headerInfo, isPlaying, isCountingDown, theme, toggleTheme }) {
         </p>
       </div>
 
-      {/* Status Indicator & Theme Toggle - Mobile Optimized */}
+      {/* Status Indicator & Theme Selector - Mobile Optimized */}
       <div className="flex justify-center items-center gap-2 sm:gap-3 md:gap-4 flex-wrap px-2">
         <div 
           className={`
@@ -63,23 +70,41 @@ function Header({ headerInfo, isPlaying, isCountingDown, theme, toggleTheme }) {
           <Music className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 ${isCountingDown ? "text-[var(--color-warning)]" : isPlaying ? "text-[var(--color-success)]" : "text-[var(--color-primary-light)]"}`} />
         </div>
 
-        {/* Theme Toggle Button - Mobile Optimized */}
-        <button
-          onClick={toggleTheme}
-          className="glass px-3 sm:px-4 py-1.5 sm:py-2 md:py-2.5 rounded-full flex items-center gap-1.5 sm:gap-2 
-                   border border-[var(--color-primary-medium)] hover:border-[var(--color-gold)]
-                   transition-all duration-300 hover:scale-105 active:scale-95 group"
-          aria-label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+        {/* 3-Way Theme Selector - Segmented Control */}
+        <div 
+          className="glass rounded-full p-0.5 sm:p-1 flex items-center border border-[var(--color-primary-medium)]"
+          role="radiogroup"
+          aria-label="Theme selector"
         >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-gold)] group-hover:rotate-45 transition-transform duration-300" />
-          ) : (
-            <Moon className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-gold)] group-hover:-rotate-12 transition-transform duration-300" />
-          )}
-          <span className="text-[9px] sm:text-[10px] md:text-xs font-medium text-[var(--color-cream)]">
-            {theme === 'dark' ? 'Claro' : 'Oscuro'}
-          </span>
-        </button>
+          {themeOptions.map(option => {
+            const isActive = theme === option.id;
+            const Icon = option.icon;
+            
+            return (
+              <button
+                key={option.id}
+                onClick={() => onThemeChange(option.id)}
+                className={`
+                  px-2 py-1 sm:px-3 sm:py-1.5 rounded-full flex items-center gap-1 sm:gap-1.5
+                  transition-all duration-300 text-[9px] sm:text-[10px] md:text-xs font-medium
+                  ${isActive 
+                    ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)] shadow-md' 
+                    : 'text-[var(--color-primary-light)] hover:text-[var(--color-cream)] hover:bg-[var(--color-primary-dark)]'
+                  }
+                `}
+                role="radio"
+                aria-checked={isActive}
+                aria-label={option.ariaLabel || `${option.label} theme`}
+                title={option.id === 'practice' ? 'Practice Mode - High Contrast for Night' : `${option.label} Theme`}
+              >
+                {Icon ? (
+                  <Icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isActive ? '' : 'opacity-70'}`} />
+                ) : null}
+                <span>{option.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </header>
   );

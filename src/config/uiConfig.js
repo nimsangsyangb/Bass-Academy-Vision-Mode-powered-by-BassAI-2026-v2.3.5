@@ -26,5 +26,5 @@ export const VIEW_MODES = {
 export const THEME_CONFIG = {
   storageKey: 'bass-trainer-theme',
   default: 'dark',
-  options: ['dark', 'light'],
+  options: ['dark', 'light', 'practice'],
 };

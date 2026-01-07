@@ -6,6 +6,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { X, Play, Square, Volume2 } from 'lucide-react';
 import { useFullscreen } from '../../hooks/useFullscreen';
+import ProgressBar from './ProgressBar';
 import TablatureDesktop from './TablatureDesktop';
 import TablatureMobile from './TablatureMobile';
 import FretboardView from '../FretboardView';
@@ -114,6 +115,15 @@ const FullscreenTablature = ({
         </button>
       </div>
 
+      {/* Progress Bar - Fullscreen Variant */}
+      <ProgressBar
+        currentIndex={currentNoteIndex}
+        totalNotes={tabData.length}
+        tempo={tempo}
+        isPlaying={isPlaying}
+        variant="fullscreen"
+      />
+
       {/* Área principal de tablatura */}
       <div className="fullscreen-tablature-content">
         {viewMode === VIEW_MODES.FRETBOARD ? (
@@ -129,6 +139,8 @@ const FullscreenTablature = ({
             selectedPattern={selectedPattern}
             secondRoot={secondRoot}
             secondPattern={secondPattern}
+            tempo={tempo}
+            isPlaying={isPlaying}
           />
         ) : (
           <TablatureDesktop
@@ -138,6 +150,8 @@ const FullscreenTablature = ({
             selectedPattern={selectedPattern}
             secondRoot={secondRoot}
             secondPattern={secondPattern}
+            tempo={tempo}
+            isPlaying={isPlaying}
           />
         )}
       </div>

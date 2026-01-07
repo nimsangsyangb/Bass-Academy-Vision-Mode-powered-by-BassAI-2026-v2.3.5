@@ -141,7 +141,8 @@ const BassTrainer = ({ selectedCategory, onBack }) => {
     localStorage.setItem(THEME_CONFIG.storageKey, theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => setTheme(p => p === 'dark' ? 'light' : 'dark'), []);
+  // Theme change handler - direct set for 3-way selector
+  const handleThemeChange = useCallback((newTheme) => setTheme(newTheme), []);
 
   // Audio & Logic
   const countdownTimeoutsRef = useRef([]);
@@ -205,9 +206,17 @@ const BassTrainer = ({ selectedCategory, onBack }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (['INPUT', 'SELECT'].includes(e.target.tagName)) return;
+      
+      // Space: Play/Pause
       if (e.code === 'Space') {
         e.preventDefault();
         isPlaying || isCountingDown ? handleStop() : handlePlay();
+      }
+      
+      // P: Toggle Practice Mode
+      if (e.code === 'KeyP') {
+        e.preventDefault();
+        setTheme(prev => prev === 'practice' ? 'dark' : 'practice');
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -232,7 +241,7 @@ const BassTrainer = ({ selectedCategory, onBack }) => {
           <span className="font-medium text-xs sm:text-sm md:text-base">Volver a Artistas</span>
         </button>
 
-        <Header headerInfo={headerInfo} isPlaying={isPlaying} isCountingDown={isCountingDown} theme={theme} toggleTheme={toggleTheme} />
+        <Header headerInfo={headerInfo} isPlaying={isPlaying} isCountingDown={isCountingDown} theme={theme} onThemeChange={handleThemeChange} />
 
         {isCountingDown && <CountdownOverlay countdown={countdown} onCancel={handleStop} />}
 
@@ -277,8 +286,8 @@ const BassTrainer = ({ selectedCategory, onBack }) => {
             <FretboardView tabData={tabData} currentNoteIndex={currentNoteIndex} />
           ) : (
             <>
-              <TablatureDesktop tabData={tabData} currentNoteIndex={currentNoteIndex} selectedRoot={selectedRoot} selectedPattern={selectedPattern} secondRoot={secondRoot} secondPattern={secondPattern} />
-              <TablatureMobile tabData={tabData} currentNoteIndex={currentNoteIndex} />
+              <TablatureDesktop tabData={tabData} currentNoteIndex={currentNoteIndex} selectedRoot={selectedRoot} selectedPattern={selectedPattern} secondRoot={secondRoot} secondPattern={secondPattern} tempo={tempo} isPlaying={isPlaying} />
+              <TablatureMobile tabData={tabData} currentNoteIndex={currentNoteIndex} selectedRoot={selectedRoot} selectedPattern={selectedPattern} secondRoot={secondRoot} secondPattern={secondPattern} tempo={tempo} isPlaying={isPlaying} />
             </>
           )}
         </div>
