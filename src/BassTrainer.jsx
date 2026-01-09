@@ -54,6 +54,13 @@ import { generateCustomTabData } from "./data/customExerciseLibrary.js";
 // Stats
 import StatsModal from "./components/stats/StatsModal.jsx";
 
+// Recording Feature
+import RecordingButton from "./components/recording/RecordingButton.jsx";
+import RecordingIndicator from "./components/recording/RecordingIndicator.jsx";
+import RecordingModal from "./components/recording/RecordingModal.jsx";
+import { useMediaRecorder } from "./features/recording/hooks/useMediaRecorder.js";
+import { useRecordingStorage } from "./features/recording/hooks/useRecordingStorage.js";
+
 const EXERCISE_STORAGE_KEY = 'bass-trainer-exercise-state';
 
 const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
@@ -78,6 +85,16 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   
   // Practice Stats Hook
   const { stats, formatTime } = usePracticeStats(playerState.isPlaying);
+  
+  // Recording Hooks
+  const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
+  const recordingHook = useMediaRecorder({
+    quality: 'MEDIUM',
+    onRecordingComplete: (data) => {
+      console.log('Recording complete:', data);
+    },
+  });
+  const storageHook = useRecordingStorage();
   
   // Exercise State - Initialize safe defaults
   const [exerciseState, setExerciseState] = useState(() => {
@@ -145,6 +162,14 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     secondPatternId: secondPattern, 
     secondRootNote: secondRoot 
   } = exerciseState;
+
+  // Exercise context for recording metadata
+  const exerciseContext = useMemo(() => ({
+    patternId: selectedPattern,
+    rootNote: selectedRoot,
+    tempo: playerState.tempo,
+    isCustom: exerciseState?.isCustom || false,
+  }), [selectedPattern, selectedRoot, playerState.tempo, exerciseState?.isCustom]);
 
   // Setters
   const setSelectedPattern = (val) => setExerciseState(prev => ({ ...prev, patternId: val }));
@@ -403,6 +428,39 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
           onClose={() => setIsFullscreen(false)}
         />
       )}
+
+      {/* Recording Button (Floating Action Button) */}
+      <RecordingButton
+        recordingState={recordingHook.recordingState}
+        countdown={recordingHook.countdown}
+        audioLevel={recordingHook.audioLevel}
+        onStart={() => setIsRecordingModalOpen(true)}
+        onStop={recordingHook.stopRecording}
+        onPause={recordingHook.pauseRecording}
+        onResume={recordingHook.resumeRecording}
+      />
+
+      {/* Recording Indicator (shows when recording) */}
+      {(recordingHook.isRecording || recordingHook.isPaused) && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <RecordingIndicator
+            recordingState={recordingHook.recordingState}
+            duration={recordingHook.recordingDuration}
+            showDuration={true}
+            size="md"
+          />
+        </div>
+      )}
+
+      {/* Recording Modal */}
+      <RecordingModal
+        isOpen={isRecordingModalOpen}
+        onClose={() => setIsRecordingModalOpen(false)}
+        recordingHook={recordingHook}
+        storageHook={storageHook}
+        exerciseContext={exerciseContext}
+        initialTab="record"
+      />
     </div>
   );
 };

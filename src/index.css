@@ -35,6 +35,22 @@
   --color-active: #FACC15;
   --color-active-glow: rgba(250, 204, 21, 0.6);
   
+  /* Recording States */
+  --color-rec-idle: #6B7280;
+  --color-rec-active: #EF4444;
+  --color-rec-paused: #F59E0B;
+  --color-rec-playing: #10B981;
+  
+  /* Waveform Colors */
+  --color-waveform-bg: rgba(255, 255, 255, 0.05);
+  --color-waveform-played: var(--color-gold);
+  --color-waveform-unplayed: var(--color-primary-light);
+  --color-waveform-peak: #EF4444;
+  
+  /* Recording UI */
+  --color-recording-overlay: rgba(239, 68, 68, 0.1);
+  --shadow-recording: 0 0 20px rgba(239, 68, 68, 0.4);
+  
   /* Typography */
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
