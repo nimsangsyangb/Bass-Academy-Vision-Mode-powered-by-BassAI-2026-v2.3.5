@@ -271,7 +271,8 @@ We'd love to hear from you! Help us improve Bass Academy:
 | Channel | Link |
 |---------|------|
 | 📝 **Feedback Form** | [Submit Feedback](https://forms.gle/zGTSzwywuzvfadHf7) |
-| 📧 **Email** | [contact@bassacademy.dev](mailto:contact@bassacademy.dev) |
+| 📧 **Email** | [bassacademy.contact@gmail.com](mailto:bassacademy.contact@gmail.com) |
+| 📱 **WhatsApp** | [+54 9 11 3066-6369](https://wa.me/5491130666369) |
 | 🐛 **Report Bug** | [GitHub Issues](https://github.com/juliandeveloper05/Bass-Academy-Interactive-Bass-Training/issues) |
 | 💡 **Feature Request** | [GitHub Discussions](https://github.com/juliandeveloper05/Bass-Academy-Interactive-Bass-Training/discussions) |
 
