@@ -395,7 +395,7 @@ const RecordingPlayer = ({
       </div>
 
       {/* Secondary Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-center">
         {/* Volume */}
         <div className="flex items-center gap-2">
           <button
@@ -411,31 +411,9 @@ const RecordingPlayer = ({
             step="0.1"
             value={isMuted ? 0 : volume}
             onChange={handleVolumeChange}
-            className="w-20 h-1 appearance-none bg-white/20 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
+            className="w-24 h-1 appearance-none bg-white/20 rounded-full cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full"
           />
         </div>
-
-        {/* Speed Control */}
-        {showSpeedControl && (
-          <div className="flex items-center gap-1">
-            <SpeedIcon className="w-4 h-4 text-white/50" />
-            <div className="flex items-center gap-0.5">
-              {speedOptions.map((speed) => (
-                <button
-                  key={speed}
-                  onClick={() => handleSpeedChange(speed)}
-                  className={`px-2 py-0.5 text-xs rounded transition-colors ${
-                    playbackRate === speed
-                      ? 'bg-[#C9A554] text-[#0D1B2A] font-medium'
-                      : 'text-white/50 hover:text-white hover:bg-white/10'
-                  }`}
-                >
-                  {speed}x
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
