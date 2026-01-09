@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/Version-2.3.2-C9A554?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.3.3-C9A554?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
@@ -65,7 +65,16 @@ Bass Academy addresses a critical gap in the music education technology market: 
 3. **Partnership Potential** — Licensing with music schools, YouTube creators
 4. **Mobile Apps** — Capacitor/React Native wrapper for App Store presence
 
-## 🆕 What's New in v2.3.2
+## 🆕 What's New in v2.3.3
+
+- ⚡ **Performance Optimizations** - Faster HomeScreen loading with throttled mouse tracking
+- 🎯 **Memoized Components** - ArtistCard, Magnetic, and MusicParticles now use React.memo
+- 🖼️ **Lazy Image Loading** - Artist images load on-demand for faster initial render
+- 🎨 **Reduced GPU Load** - Blur effects optimized (64px → 40px), fewer particles (15 → 8)
+- 📦 **Optimized CSS** - 200+ lines moved from inline JSX to external CSS for caching
+- ♿ **Accessibility** - Added `prefers-reduced-motion` support for users who need it
+
+### Previous (v2.3.2)
 
 - 🎙️ **Audio Recording System** - Record your practice sessions for self-review
 - 🥁 **Recording Metronome** - Built-in hi-hat metronome with pre-roll countdown
@@ -248,6 +257,13 @@ The app will be available at `http://localhost:5173`
 
 ## 🗺️ Roadmap
 
+### ✅ Completed (v2.3.3)
+- [x] **Performance Optimizations** with RAF-throttled mouse tracking
+- [x] **Memoized React Components** for reduced re-renders
+- [x] **Lazy Image Loading** with `loading="lazy"` attribute
+- [x] **GPU-optimized CSS** with will-change hints
+- [x] **Accessibility** with prefers-reduced-motion support
+
 ### ✅ Completed (v2.3.2)
 - [x] **Audio Recording System** with waveform visualization
 - [x] **Recording Metronome** with hi-hat sound and pre-roll countdown
@@ -307,6 +323,6 @@ MIT © 2026 Julian Javier Soto
 
 **Made with ❤️ for bass players by [Julian Soto](https://github.com/juliandeveloper05)**
 
-**Bass Academy · 2026 · v2.3.2**
+**Bass Academy · 2026 · v2.3.3**
 
 </div>
