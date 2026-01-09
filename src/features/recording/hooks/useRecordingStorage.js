@@ -69,18 +69,23 @@ export function useRecordingStorage() {
     setError(null);
     
     try {
+      // Use customName if provided, otherwise generate name
+      const recordingName = exerciseContext.customName || generateRecordingName(exerciseContext);
+      
       const recording = {
-        name: generateRecordingName(exerciseContext),
+        name: recordingName,
         duration: recordingData.duration,
         size: recordingData.size || recordingData.blob?.size || 0,
         format: recordingData.mimeType,
         audioBlob: recordingData.blob,
+        waveformData: recordingData.waveformData || null, // Store real waveform data
         exercise: {
           patternId: exerciseContext.patternId || null,
           rootNote: exerciseContext.rootNote || null,
           tempo: exerciseContext.tempo || null,
           isCustom: exerciseContext.isCustom || false,
         },
+        notes: exerciseContext.notes || '',
         quality: recordingData.quality || 'MEDIUM',
       };
 

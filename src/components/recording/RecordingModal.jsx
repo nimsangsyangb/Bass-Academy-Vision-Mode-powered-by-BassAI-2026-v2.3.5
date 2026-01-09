@@ -56,6 +56,28 @@ const RecordingModal = ({
   initialTab = 'record',
 }) => {
   const [activeTab, setActiveTab] = React.useState(initialTab);
+  
+  // Editable metadata state
+  const [editableMetadata, setEditableMetadata] = React.useState({
+    name: '',
+    rootNote: '',
+    patternId: '',
+    tempo: '',
+    notes: '',
+  });
+
+  // Initialize editable metadata when exercise context changes or recording stops
+  React.useEffect(() => {
+    if (exerciseContext) {
+      setEditableMetadata(prev => ({
+        ...prev,
+        name: `${exerciseContext.rootNote || ''} ${exerciseContext.patternId || ''} - ${new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`.trim(),
+        rootNote: exerciseContext.rootNote || 'E',
+        patternId: exerciseContext.patternId || '',
+        tempo: exerciseContext.tempo?.toString() || '100',
+      }));
+    }
+  }, [exerciseContext]);
 
   // Extract from hooks
   const {
@@ -95,7 +117,7 @@ const RecordingModal = ({
   // KEYBOARD HANDLING
   // ============================================
 
-  useEffect(() => {
+  React.useEffect(() => {
     const handleKeyDown = (e) => {
       if (!isOpen) return;
       
@@ -114,7 +136,7 @@ const RecordingModal = ({
   }, [isOpen, isRecording, isPaused, onClose]);
 
   // Lock body scroll when open
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -126,40 +148,111 @@ const RecordingModal = ({
   }, [isOpen]);
 
   // ============================================
+  // COMPUTE WAVEFORM DATA
+  // ============================================
+  
+  const computeWaveformData = React.useCallback(async (blob) => {
+    try {
+      const arrayBuffer = await blob.arrayBuffer();
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+      
+      const channelData = audioBuffer.getChannelData(0);
+      const numBars = 100;
+      const samplesPerBar = Math.floor(channelData.length / numBars);
+      
+      if (samplesPerBar === 0) {
+        audioContext.close();
+        return null;
+      }
+      
+      const waveform = [];
+      
+      for (let i = 0; i < numBars; i++) {
+        let sum = 0;
+        const start = i * samplesPerBar;
+        const end = Math.min(start + samplesPerBar, channelData.length);
+        
+        for (let j = start; j < end; j++) {
+          sum += Math.abs(channelData[j]);
+        }
+        
+        waveform.push(sum / (end - start));
+      }
+
+      // Normalize
+      const max = Math.max(...waveform);
+      if (max > 0) {
+        for (let i = 0; i < waveform.length; i++) {
+          waveform[i] = waveform[i] / max;
+        }
+      }
+
+      audioContext.close();
+      return waveform;
+    } catch (err) {
+      console.error('Failed to compute waveform:', err);
+      return null;
+    }
+  }, []);
+
+  // ============================================
   // SAVE HANDLER
   // ============================================
 
-  const handleSave = useCallback(async () => {
+  const handleSave = React.useCallback(async () => {
     if (!audioBlob) return;
 
     try {
+      // Compute waveform data before saving
+      const waveformData = await computeWaveformData(audioBlob);
+      
       await saveRecording({
         blob: audioBlob,
         duration: recordingDuration,
         size: audioBlob.size,
         mimeType: audioBlob.type,
-      }, exerciseContext);
+        waveformData: waveformData,
+      }, {
+        patternId: editableMetadata.patternId,
+        rootNote: editableMetadata.rootNote,
+        tempo: parseInt(editableMetadata.tempo) || null,
+        isCustom: exerciseContext.isCustom || false,
+        customName: editableMetadata.name,
+        notes: editableMetadata.notes,
+      });
 
       reset();
       setActiveTab('library');
     } catch (err) {
       console.error('Failed to save recording:', err);
     }
-  }, [audioBlob, recordingDuration, exerciseContext, saveRecording, reset]);
+  }, [audioBlob, recordingDuration, editableMetadata, exerciseContext, saveRecording, reset, computeWaveformData]);
 
   // ============================================
   // RATING HANDLER
   // ============================================
 
-  const handleRatingChange = useCallback(async (id, rating) => {
+  const handleRatingChange = React.useCallback(async (id, rating) => {
     await updateRecording(id, { rating });
   }, [updateRecording]);
+
+  // ============================================
+  // METADATA INPUT HANDLER
+  // ============================================
+  
+  const handleMetadataChange = (field, value) => {
+    setEditableMetadata(prev => ({ ...prev, [field]: value }));
+  };
 
   // ============================================
   // RENDER
   // ============================================
 
   if (!isOpen) return null;
+
+  // Note name options
+  const noteOptions = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -253,22 +346,74 @@ const RecordingModal = ({
                 </div>
               )}
 
-              {/* Exercise Context Info */}
-              {exerciseContext.patternId && (
-                <div className="mt-6 p-4 bg-white/5 rounded-xl">
-                  <h3 className="text-sm font-medium text-white/70 mb-2">Recording Context</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="px-2 py-1 bg-[#C9A554]/20 text-[#C9A554] text-xs rounded">
-                      {exerciseContext.rootNote} - {exerciseContext.patternId}
-                    </span>
-                    {exerciseContext.tempo && (
-                      <span className="px-2 py-1 bg-white/10 text-white/60 text-xs rounded">
-                        {exerciseContext.tempo} BPM
-                      </span>
-                    )}
+              {/* Editable Recording Context */}
+              <div className="mt-6 p-4 bg-white/5 rounded-xl">
+                <h3 className="text-sm font-medium text-white/70 mb-3">📝 Recording Details</h3>
+                
+                {/* Name Field */}
+                <div className="mb-3">
+                  <label className="block text-xs text-white/50 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={editableMetadata.name}
+                    onChange={(e) => handleMetadataChange('name', e.target.value)}
+                    placeholder="My Practice Recording"
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A554] transition-colors"
+                  />
+                </div>
+                
+                {/* Row: Root Note, Pattern, BPM */}
+                <div className="grid grid-cols-3 gap-3 mb-3">
+                  <div>
+                    <label className="block text-xs text-white/50 mb-1">Key</label>
+                    <select
+                      value={editableMetadata.rootNote}
+                      onChange={(e) => handleMetadataChange('rootNote', e.target.value)}
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm focus:outline-none focus:border-[#C9A554] transition-colors cursor-pointer"
+                    >
+                      {noteOptions.map(note => (
+                        <option key={note} value={note} className="bg-[#1B263B]">{note}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-white/50 mb-1">Pattern</label>
+                    <input
+                      type="text"
+                      value={editableMetadata.patternId}
+                      onChange={(e) => handleMetadataChange('patternId', e.target.value)}
+                      placeholder="Scale/Exercise"
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A554] transition-colors"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-xs text-white/50 mb-1">BPM</label>
+                    <input
+                      type="number"
+                      value={editableMetadata.tempo}
+                      onChange={(e) => handleMetadataChange('tempo', e.target.value)}
+                      placeholder="120"
+                      min="40"
+                      max="300"
+                      className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A554] transition-colors"
+                    />
                   </div>
                 </div>
-              )}
+                
+                {/* Notes Field */}
+                <div>
+                  <label className="block text-xs text-white/50 mb-1">Notes (optional)</label>
+                  <textarea
+                    value={editableMetadata.notes}
+                    onChange={(e) => handleMetadataChange('notes', e.target.value)}
+                    placeholder="Add notes about this recording..."
+                    rows={2}
+                    className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A554] transition-colors resize-none"
+                  />
+                </div>
+              </div>
             </div>
           )}
 

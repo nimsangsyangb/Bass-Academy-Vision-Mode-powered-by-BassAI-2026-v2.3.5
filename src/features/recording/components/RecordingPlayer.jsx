@@ -345,7 +345,8 @@ const RecordingPlayer = ({
       {/* Waveform */}
       {showWaveform && (
         <WaveformVisualizer
-          audioSource={audioUrl}
+          waveformData={recording?.waveformData}
+          audioSource={!recording?.waveformData ? audioUrl : null}
           progress={progress}
           duration={duration}
           onSeek={seek}
