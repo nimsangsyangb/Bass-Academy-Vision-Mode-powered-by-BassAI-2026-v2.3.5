@@ -236,7 +236,7 @@ const WaveformVisualizer = ({
     // Progress point with offset compensation
     // The offset accounts for recording latency (time between MediaRecorder start and first audio)
     const offsetProgress = duration > 0 
-      ? Math.max(0, Math.min(1, progress + (audioOffset / duration)))
+      ? Math.max(0, Math.min(1, progress - (audioOffset / duration)))
       : progress;
     const progressX = canvasWidth * offsetProgress;
 
