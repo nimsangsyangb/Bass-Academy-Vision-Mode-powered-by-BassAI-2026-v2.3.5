@@ -185,7 +185,7 @@ function ArtistCard({ artist, onClick, index }) {
       <button
         ref={cardRef}
         className="landscape-compact-card group relative w-full h-full overflow-hidden text-left transition-all duration-300 transform rounded-2xl lg:rounded-3xl
-                   focus:outline-none focus:ring-4 focus:ring-white/30"
+                   focus:outline-none focus:ring-4 focus:ring-white/30 cursor-rock"
         onClick={() => onClick(artist.id)}
         onMouseEnter={() => setIsHovered(true)}
         onMouseMove={handleMouseMove}
@@ -398,7 +398,7 @@ function HomeScreen({ onSelectArtist, onSelectCustomBuilder }) {
             onClick={onSelectCustomBuilder}
             className="custom-builder-card group w-full relative overflow-hidden rounded-2xl lg:rounded-3xl p-5 sm:p-6 lg:p-8
                      text-left transition-all duration-500 transform hover:scale-[1.02] active:scale-95
-                     focus:outline-none focus:ring-4 focus:ring-[#C9A554]/30"
+                     focus:outline-none focus:ring-4 focus:ring-[#C9A554]/30 cursor-rock"
           >
             {/* Shine effect */}
             <div

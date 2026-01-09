@@ -3,6 +3,11 @@
    Bass Academy 2026
    ============================================ */
 
+/* Custom Cursor for Interactables */
+.cursor-rock {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='none' stroke='%23C9A554' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M18 10V5a2 2 0 0 0-4 0v5' /><path d='M14 10V4a2 2 0 0 0-4 0v6' /><path d='M10 10V6a2 2 0 0 0-4 0v6' /><path d='M6 18a2 2 0 0 1-2-2V9' /><path d='M6 16v-6a2 2 0 0 0-2 0v6' /><path d='M18 20a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2v-4' /><path d='M18 10a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2' /></svg>") 16 16, pointer;
+}
+
 /* Home Screen Layout */
 .home-screen {
   min-height: 100vh;
