@@ -25,7 +25,6 @@ const PopoutApp = () => {
     isLooping: true,
   });
 
-  const [isConnected, setIsConnected] = useState(false);
   const mainWindowRef = useRef(window.opener);
   const sendHandshakeRef = useRef(null);
   const setPartnerWindowRef = useRef(null);
@@ -41,23 +40,16 @@ const PopoutApp = () => {
     console.log('[PopoutApp] Command received:', command, value);
   }, []);
 
-  // Handle connection status changes
-  const handleConnectionChange = useCallback((connected) => {
-    setIsConnected(connected);
-    if (connected) {
-      setConnectionAttempts(0);
-    }
-  }, []);
-
+  // Use isConnected directly from the hook
   const {
     sendCommand,
     sendHandshake,
     setPartnerWindow,
+    isConnected,
   } = useWindowSync({
     isPopout: true,
     onStateReceived: handleStateReceived,
     onCommandReceived: handleCommandReceived,
-    onConnectionChange: handleConnectionChange,
   });
 
   // Store functions in refs for stable access in mount effect
