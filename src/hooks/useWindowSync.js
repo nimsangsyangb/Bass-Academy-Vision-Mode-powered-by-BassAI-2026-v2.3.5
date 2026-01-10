@@ -42,6 +42,7 @@ export function useWindowSync({
   onConnectionChange,
 }) {
   const [isConnected, setIsConnected] = useState(false);
+  const isConnectedRef = useRef(false); // Track internally to avoid stale closures
   const partnerWindowRef = useRef(null);
   const lastPongRef = useRef(Date.now());
   
@@ -110,10 +111,24 @@ export function useWindowSync({
 
       switch (type) {
         case SYNC_MESSAGE_TYPES.STATE_UPDATE:
+          // If we receive state, we're connected!
+          lastPongRef.current = Date.now();
+          if (!isConnectedRef.current) {
+            isConnectedRef.current = true;
+            setIsConnected(true);
+            onConnectionChangeRef.current?.(true);
+          }
           onStateReceivedRef.current?.(payload);
           break;
 
         case SYNC_MESSAGE_TYPES.COMMAND:
+          // If we receive commands, we're connected!
+          lastPongRef.current = Date.now();
+          if (!isConnectedRef.current) {
+            isConnectedRef.current = true;
+            setIsConnected(true);
+            onConnectionChangeRef.current?.(true);
+          }
           onCommandReceivedRef.current?.(payload.command, payload.value);
           break;
 
@@ -123,6 +138,7 @@ export function useWindowSync({
             partnerWindowRef.current = event.source;
           }
           lastPongRef.current = Date.now();
+          isConnectedRef.current = true;
           setIsConnected(true);
           onConnectionChangeRef.current?.(true);
           // Respond to handshake
@@ -135,10 +151,12 @@ export function useWindowSync({
 
         case SYNC_MESSAGE_TYPES.PONG:
           lastPongRef.current = Date.now();
+          isConnectedRef.current = true;
           setIsConnected(true);
           break;
 
         case SYNC_MESSAGE_TYPES.DISCONNECT:
+          isConnectedRef.current = false;
           setIsConnected(false);
           onConnectionChangeRef.current?.(false);
           break;
@@ -159,8 +177,11 @@ export function useWindowSync({
       
       // Check if partner window is closed
       if (target?.closed) {
-        setIsConnected(false);
-        onConnectionChangeRef.current?.(false);
+        if (isConnectedRef.current) {
+          isConnectedRef.current = false;
+          setIsConnected(false);
+          onConnectionChangeRef.current?.(false);
+        }
         return;
       }
 
@@ -169,7 +190,8 @@ export function useWindowSync({
         sendMessage(SYNC_MESSAGE_TYPES.PING);
         
         // Check for stale connection (no pong in 6 seconds)
-        if (Date.now() - lastPongRef.current > 6000) {
+        if (isConnectedRef.current && Date.now() - lastPongRef.current > 6000) {
+          isConnectedRef.current = false;
           setIsConnected(false);
           onConnectionChangeRef.current?.(false);
         }
