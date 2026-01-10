@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA Meta Tags -->
+  <meta name="application-name" content="Bass Academy - Popout" />
+  <meta name="theme-color" content="#C9A554" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <title>Bass Academy | Pop-out Trainer</title>
+</head>
+
+<body>
+  <noscript>
+    <div style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%);
+      color: #F8F5F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding: 2rem;
+      text-align: center;
+    ">
+      <div>
+        <h1 style="font-size: 1.5rem; color: #C9A554; margin-bottom: 1rem;">🎸 Bass Academy Popout</h1>
+        <p style="font-size: 1rem; color: #778DA9;">
+          JavaScript is required to run this application.
+        </p>
+      </div>
+    </div>
+  </noscript>
+
+  <div id="popout-root"></div>
+  <script type="module" src="/src/PopoutMain.jsx"></script>
+</body>
+
+</html>

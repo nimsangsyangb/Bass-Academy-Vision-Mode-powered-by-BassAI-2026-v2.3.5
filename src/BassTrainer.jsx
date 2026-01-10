@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Music, AlertCircle, Guitar, List, ArrowLeft, Maximize2, BarChart2, Sliders } from "lucide-react";
+import { Music, AlertCircle, Guitar, List, ArrowLeft, Maximize2, BarChart2, Sliders, ExternalLink } from "lucide-react";
 
 // Components - Layout
 import Header from "./components/layout/Header.jsx";
@@ -37,6 +37,8 @@ import { usePWA } from "./hooks/usePWA.js";
 import { usePracticeStats } from "./hooks/usePracticeStats.js";
 import { useHapticFeedback } from "./hooks/useHapticFeedback.js";
 import { useLatencyCalibration } from "./hooks/useLatencyCalibration.js";
+import { usePopoutWindow } from "./hooks/usePopoutWindow.js";
+import { useWindowSync, SYNC_COMMANDS } from "./hooks/useWindowSync.js";
 
 // Config
 import { THEME_CONFIG, COUNTDOWN_CONFIG, VIEW_MODES } from "./config/uiConfig.js";
@@ -96,6 +98,9 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   
   // Latency Calibration Hook
   const latencyCalibration = useLatencyCalibration();
+  
+  // Popout Window Hook
+  const { openPopout, closePopout, isPopoutOpen, popoutWindow } = usePopoutWindow();
   const [isLatencyModalOpen, setIsLatencyModalOpen] = useState(false);
   
   // Recording Hooks
@@ -205,6 +210,48 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   // Theme change handler - direct set for 3-way selector
   const handleThemeChange = useCallback((newTheme) => setTheme(newTheme), []);
 
+  // Window sync for popout - handle commands from popout window
+  // Use refs to avoid stale closures since handlePlay/handleStop are defined after
+  const handlePlayRef = useRef(null);
+  const handleStopRef = useRef(null);
+
+  const handlePopoutCommand = useCallback((command, value) => {
+    switch (command) {
+      case SYNC_COMMANDS.PLAY:
+        handlePlayRef.current?.();
+        break;
+      case SYNC_COMMANDS.STOP:
+        handleStopRef.current?.();
+        break;
+      case SYNC_COMMANDS.SET_TEMPO:
+        actions.setTempo(value);
+        break;
+      case SYNC_COMMANDS.TOGGLE_METRONOME:
+        actions.toggleMetronome();
+        break;
+      case SYNC_COMMANDS.TOGGLE_LOOP:
+        actions.toggleLoop();
+        break;
+      default:
+        break;
+    }
+  }, [actions]);
+
+  const { sendState, setPartnerWindow } = useWindowSync({
+    isPopout: false,
+    onCommandReceived: handlePopoutCommand,
+    onConnectionChange: (connected) => {
+      console.log('[BassTrainer] Popout connection:', connected ? 'connected' : 'disconnected');
+    },
+  });
+
+  // Set partner window reference when popout opens
+  useEffect(() => {
+    if (popoutWindow) {
+      setPartnerWindow(popoutWindow);
+    }
+  }, [popoutWindow, setPartnerWindow]);
+
   // Audio & Logic
   const countdownTimeoutsRef = useRef([]);
 
@@ -294,6 +341,12 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     vibrateStop();
   }, [scheduler, actions, audio, vibrateStop]);
 
+  // Keep refs updated for popout command handling
+  useEffect(() => {
+    handlePlayRef.current = handlePlay;
+    handleStopRef.current = handleStop;
+  }, [handlePlay, handleStop]);
+
   // Volume
   const handleBassVolume = (v) => { actions.setBassVolume(v); audio.setBassVolume(v); };
   const handleMetronomeVolume = (v) => { actions.setMetronomeVolume(v); audio.setMetronomeVolume(v); };
@@ -320,6 +373,43 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPlaying, isCountingDown, handlePlay, handleStop]);
+
+  // Broadcast state to popout window
+  useEffect(() => {
+    if (!isPopoutOpen) return;
+    
+    sendState({
+      isPlaying,
+      isCountingDown,
+      tempo,
+      currentNoteIndex,
+      tabData,
+      headerInfo,
+      selectedRoot,
+      selectedPattern,
+      secondRoot,
+      secondPattern,
+      theme,
+      isMetronomeEnabled,
+      isLooping,
+    });
+  }, [
+    isPopoutOpen,
+    isPlaying,
+    isCountingDown,
+    tempo,
+    currentNoteIndex,
+    tabData,
+    headerInfo,
+    selectedRoot,
+    selectedPattern,
+    secondRoot,
+    secondPattern,
+    theme,
+    isMetronomeEnabled,
+    isLooping,
+    sendState,
+  ]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-3 sm:py-5 md:py-8 px-3 sm:px-4 md:px-6 font-[var(--font-body)]">
@@ -404,6 +494,14 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
                   title="Pantalla completa"
                 >
                   <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+                <button 
+                  onClick={openPopout}
+                  className={`hidden sm:flex px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all flex items-center gap-1 ${isPopoutOpen ? 'bg-[var(--color-gold)]/20 text-[var(--color-gold)]' : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] hover:bg-[var(--color-gold)] hover:text-[var(--color-primary-deep)]'}`}
+                  aria-label="Abrir en ventana flotante"
+                  title={isPopoutOpen ? 'Ventana flotante abierta' : 'Pop-out'}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
               </div>
             </div>

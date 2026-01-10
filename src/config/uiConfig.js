@@ -37,3 +37,11 @@ export const POWER_SAVING_CONFIG = {
   disableParticles: true,
   disableAnimations: true,
 };
+
+// Pop-out Window Configuration
+export const POPOUT_CONFIG = {
+  width: 900,
+  height: 550,
+  features: 'toolbar=no,location=no,status=no,menubar=no,resizable=yes,scrollbars=yes',
+};
+

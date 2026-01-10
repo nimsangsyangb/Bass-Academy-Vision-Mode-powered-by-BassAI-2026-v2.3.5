@@ -130,6 +130,10 @@ export default defineConfig({
     
     // Code splitting
     rollupOptions: {
+      input: {
+        main: './index.html',
+        popout: './popout.html',
+      },
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
