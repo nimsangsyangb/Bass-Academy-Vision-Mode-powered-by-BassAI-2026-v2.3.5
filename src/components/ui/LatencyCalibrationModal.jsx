@@ -3,7 +3,7 @@
  * Modal for calibrating audio latency via tap-to-click
  */
 import React from 'react';
-import { X, Volume2, Check, RotateCcw, AlertCircle } from 'lucide-react';
+import { X, Volume2, Check, RotateCcw, AlertCircle, AlertTriangle, Sparkles } from 'lucide-react';
 import { LATENCY_CONFIG } from '../../config/audioConfig.js';
 
 const LatencyCalibrationModal = ({
@@ -24,6 +24,44 @@ const LatencyCalibrationModal = ({
   if (!isOpen) return null;
 
   const progress = (currentClick / totalClicks) * 100;
+
+  // Evaluate calibration quality
+  const getCalibrationQuality = () => {
+    if (calculatedOffset === null) return null;
+    
+    const absOffset = Math.abs(calculatedOffset);
+    
+    if (absOffset <= 50) {
+      return {
+        level: 'excellent',
+        icon: Sparkles,
+        color: 'text-green-400',
+        bgColor: 'bg-green-500/20',
+        title: '¡Excelente!',
+        message: 'Tu dispositivo tiene muy baja latencia. Calibración óptima.',
+      };
+    } else if (absOffset <= 100) {
+      return {
+        level: 'good',
+        icon: Check,
+        color: 'text-blue-400',
+        bgColor: 'bg-blue-500/20',
+        title: 'Calibración Correcta',
+        message: 'Latencia normal para dispositivos móviles.',
+      };
+    } else {
+      return {
+        level: 'warning',
+        icon: AlertTriangle,
+        color: 'text-yellow-400',
+        bgColor: 'bg-yellow-500/20',
+        title: 'Latencia Alta Detectada',
+        message: 'Tu dispositivo tiene latencia elevada. Considera usar auriculares con cable.',
+      };
+    }
+  };
+
+  const quality = getCalibrationQuality();
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
@@ -124,20 +162,23 @@ const LatencyCalibrationModal = ({
           )}
 
           {/* Complete State */}
-          {isComplete && (
+          {isComplete && quality && (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <Check className="w-8 h-8 text-green-400" />
+                <div className={`w-16 h-16 mx-auto mb-4 rounded-full ${quality.bgColor} flex items-center justify-center`}>
+                  <quality.icon className={`w-8 h-8 ${quality.color}`} />
                 </div>
                 <h3 className="text-xl font-bold text-[var(--color-cream)] mb-2">
-                  ¡Calibración Completa!
+                  {quality.title}
                 </h3>
                 <p className="text-[var(--color-primary-light)]">
                   Latencia detectada:
                 </p>
                 <p className="text-3xl font-bold text-[var(--color-gold)] mt-2">
                   {calculatedOffset}ms
+                </p>
+                <p className={`text-sm mt-3 ${quality.color}`}>
+                  {quality.message}
                 </p>
               </div>
 
