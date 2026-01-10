@@ -26,8 +26,9 @@ const PopoutApp = () => {
   });
 
   const [isConnected, setIsConnected] = useState(false);
-  const [connectionAttempts, setConnectionAttempts] = useState(0);
   const mainWindowRef = useRef(window.opener);
+  const sendHandshakeRef = useRef(null);
+  const setPartnerWindowRef = useRef(null);
 
   // Handle state updates from main window
   const handleStateReceived = useCallback((state) => {
@@ -59,25 +60,34 @@ const PopoutApp = () => {
     onConnectionChange: handleConnectionChange,
   });
 
-  // Set up connection to main window
+  // Store functions in refs for stable access in mount effect
   useEffect(() => {
-    if (mainWindowRef.current) {
-      setPartnerWindow(mainWindowRef.current);
-      // Send handshake to establish connection
-      sendHandshake();
-    }
-  }, [setPartnerWindow, sendHandshake]);
+    sendHandshakeRef.current = sendHandshake;
+    setPartnerWindowRef.current = setPartnerWindow;
+  }, [sendHandshake, setPartnerWindow]);
 
-  // Retry handshake if not connected
+  // Set up connection to main window on mount
   useEffect(() => {
-    if (!isConnected && connectionAttempts < 10) {
-      const timer = setTimeout(() => {
-        sendHandshake();
-        setConnectionAttempts(prev => prev + 1);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [isConnected, connectionAttempts, sendHandshake]);
+    if (!mainWindowRef.current) return;
+    
+    // Use a small delay to ensure functions are ready
+    const initTimer = setTimeout(() => {
+      setPartnerWindowRef.current?.(mainWindowRef.current);
+      sendHandshakeRef.current?.();
+    }, 100);
+    
+    // Retry handshake a few times in case of timing issues
+    const retryTimers = [600, 1200, 2500].map(delay => 
+      setTimeout(() => {
+        sendHandshakeRef.current?.();
+      }, delay)
+    );
+    
+    return () => {
+      clearTimeout(initTimer);
+      retryTimers.forEach(t => clearTimeout(t));
+    };
+  }, []); // Empty deps - only run once on mount
 
   // Apply theme
   useEffect(() => {

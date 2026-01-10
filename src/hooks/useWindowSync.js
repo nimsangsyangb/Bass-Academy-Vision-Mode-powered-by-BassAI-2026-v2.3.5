@@ -3,7 +3,7 @@
  * Handles bi-directional postMessage communication between main and popout windows
  */
 
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef, useState } from 'react';
 
 // Message types for cross-window communication
 export const SYNC_MESSAGE_TYPES = {
@@ -41,24 +41,32 @@ export function useWindowSync({
   onCommandReceived,
   onConnectionChange,
 }) {
-  const connectedRef = useRef(false);
+  const [isConnected, setIsConnected] = useState(false);
   const partnerWindowRef = useRef(null);
-  const heartbeatIntervalRef = useRef(null);
   const lastPongRef = useRef(Date.now());
+  
+  // Store callbacks in refs to avoid effect re-runs
+  const onStateReceivedRef = useRef(onStateReceived);
+  const onCommandReceivedRef = useRef(onCommandReceived);
+  const onConnectionChangeRef = useRef(onConnectionChange);
+  
+  // Update refs when callbacks change
+  useEffect(() => {
+    onStateReceivedRef.current = onStateReceived;
+    onCommandReceivedRef.current = onCommandReceived;
+    onConnectionChangeRef.current = onConnectionChange;
+  }, [onStateReceived, onCommandReceived, onConnectionChange]);
 
   // Set partner window reference
   const setPartnerWindow = useCallback((win) => {
     partnerWindowRef.current = win;
+    lastPongRef.current = Date.now(); // Reset pong timer
   }, []);
 
-  // Send message to partner window
+  // Send message to partner window (stable function)
   const sendMessage = useCallback((type, payload = {}) => {
     const target = partnerWindowRef.current;
     if (!target || target.closed) {
-      if (connectedRef.current) {
-        connectedRef.current = false;
-        onConnectionChange?.(false);
-      }
       return false;
     }
 
@@ -72,7 +80,7 @@ export function useWindowSync({
       console.warn('[useWindowSync] Failed to send message:', err);
       return false;
     }
-  }, [onConnectionChange]);
+  }, []);
 
   // Send state update
   const sendState = useCallback((state) => {
@@ -89,7 +97,7 @@ export function useWindowSync({
     return sendMessage(SYNC_MESSAGE_TYPES.HANDSHAKE, { isPopout });
   }, [sendMessage, isPopout]);
 
-  // Handle incoming messages
+  // Handle incoming messages - single stable effect
   useEffect(() => {
     const handleMessage = (event) => {
       // Security: Only accept messages from same origin
@@ -102,11 +110,11 @@ export function useWindowSync({
 
       switch (type) {
         case SYNC_MESSAGE_TYPES.STATE_UPDATE:
-          onStateReceived?.(payload);
+          onStateReceivedRef.current?.(payload);
           break;
 
         case SYNC_MESSAGE_TYPES.COMMAND:
-          onCommandReceived?.(payload.command, payload.value);
+          onCommandReceivedRef.current?.(payload.command, payload.value);
           break;
 
         case SYNC_MESSAGE_TYPES.HANDSHAKE:
@@ -114,10 +122,9 @@ export function useWindowSync({
           if (!isPopout && payload.isPopout && event.source) {
             partnerWindowRef.current = event.source;
           }
-          if (!connectedRef.current) {
-            connectedRef.current = true;
-            onConnectionChange?.(true);
-          }
+          lastPongRef.current = Date.now();
+          setIsConnected(true);
+          onConnectionChangeRef.current?.(true);
           // Respond to handshake
           sendMessage(SYNC_MESSAGE_TYPES.PONG);
           break;
@@ -128,15 +135,12 @@ export function useWindowSync({
 
         case SYNC_MESSAGE_TYPES.PONG:
           lastPongRef.current = Date.now();
-          if (!connectedRef.current) {
-            connectedRef.current = true;
-            onConnectionChange?.(true);
-          }
+          setIsConnected(true);
           break;
 
         case SYNC_MESSAGE_TYPES.DISCONNECT:
-          connectedRef.current = false;
-          onConnectionChange?.(false);
+          setIsConnected(false);
+          onConnectionChangeRef.current?.(false);
           break;
 
         default:
@@ -146,38 +150,34 @@ export function useWindowSync({
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [isPopout, onStateReceived, onCommandReceived, onConnectionChange, sendMessage]);
+  }, [isPopout, sendMessage]); // Minimal dependencies
 
-  // Heartbeat to check connection (only when connected)
+  // Heartbeat interval - only starts once on mount
   useEffect(() => {
-    if (!partnerWindowRef.current) return;
-
-    heartbeatIntervalRef.current = setInterval(() => {
-      // Check if partner window is still open
-      if (partnerWindowRef.current?.closed) {
-        if (connectedRef.current) {
-          connectedRef.current = false;
-          onConnectionChange?.(false);
-        }
+    const heartbeatInterval = setInterval(() => {
+      const target = partnerWindowRef.current;
+      
+      // Check if partner window is closed
+      if (target?.closed) {
+        setIsConnected(false);
+        onConnectionChangeRef.current?.(false);
         return;
       }
 
-      // Send ping
-      sendMessage(SYNC_MESSAGE_TYPES.PING);
-
-      // Check for stale connection (no pong in 5 seconds)
-      if (connectedRef.current && Date.now() - lastPongRef.current > 5000) {
-        connectedRef.current = false;
-        onConnectionChange?.(false);
+      // Only send ping if we have a partner
+      if (target) {
+        sendMessage(SYNC_MESSAGE_TYPES.PING);
+        
+        // Check for stale connection (no pong in 6 seconds)
+        if (Date.now() - lastPongRef.current > 6000) {
+          setIsConnected(false);
+          onConnectionChangeRef.current?.(false);
+        }
       }
-    }, 2000);
+    }, 3000); // Check every 3 seconds
 
-    return () => {
-      if (heartbeatIntervalRef.current) {
-        clearInterval(heartbeatIntervalRef.current);
-      }
-    };
-  }, [sendMessage, onConnectionChange]);
+    return () => clearInterval(heartbeatInterval);
+  }, [sendMessage]); // Only depends on sendMessage
 
   // Cleanup on unmount
   useEffect(() => {
@@ -191,7 +191,7 @@ export function useWindowSync({
     sendCommand,
     sendHandshake,
     setPartnerWindow,
-    isConnected: connectedRef.current,
+    isConnected,
   };
 }
 
