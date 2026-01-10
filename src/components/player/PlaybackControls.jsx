@@ -41,7 +41,8 @@ function PlaybackControls({
                      flex items-center gap-2 sm:gap-3 transition-all duration-300 
                      hover:shadow-[0_0_30px_var(--color-gold)/40] hover:scale-105
                      active:scale-95 text-base sm:text-lg md:text-xl min-w-[140px] sm:min-w-[160px] justify-center
-                     focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-2 focus:ring-offset-[var(--color-primary-deep)]"
+                     focus:outline-none focus:ring-2 focus:ring-[var(--color-gold)] focus:ring-offset-2 focus:ring-offset-[var(--color-primary-deep)]
+                     btn-haptic btn-play-haptic"
           >
             <Play className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 fill-current" />
             <span>PLAY</span>
@@ -55,7 +56,8 @@ function PlaybackControls({
                      flex items-center gap-2 sm:gap-3 transition-all duration-300 
                      hover:shadow-[0_0_30px_var(--color-error)/40] hover:scale-105
                      active:scale-95 text-base sm:text-lg md:text-xl min-w-[140px] sm:min-w-[160px] justify-center
-                     focus:outline-none focus:ring-2 focus:ring-[var(--color-error)] focus:ring-offset-2 focus:ring-offset-[var(--color-primary-deep)]"
+                     focus:outline-none focus:ring-2 focus:ring-[var(--color-error)] focus:ring-offset-2 focus:ring-offset-[var(--color-primary-deep)]
+                     btn-haptic btn-stop-haptic"
           >
             <Square className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 fill-current" />
             <span>STOP</span>
@@ -148,7 +150,7 @@ function ToggleButton({ isActive, onClick, icon, label, subLabel, activeColor, a
         flex flex-col items-center justify-center gap-1 sm:gap-1.5
         px-3 sm:px-4 md:px-6 py-3 sm:py-3.5 md:py-4 rounded-lg sm:rounded-xl md:rounded-2xl font-medium
         transition-all duration-300 border-2 text-xs sm:text-sm
-        min-h-[70px] sm:min-h-[75px] md:min-h-0
+        min-h-[70px] sm:min-h-[75px] md:min-h-0 btn-haptic
         ${
           isActive
             ? colorClasses[activeColor].active

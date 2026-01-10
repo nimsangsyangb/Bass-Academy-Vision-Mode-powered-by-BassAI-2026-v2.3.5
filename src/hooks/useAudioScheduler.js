@@ -12,6 +12,7 @@ export function useAudioScheduler({
   notes,
   playerState,
   actions,
+  onLoopRestart,
 }) {
   // Refs for mutable values (avoid stale closures)
   const nextNoteTimeRef = useRef(0);
@@ -76,12 +77,16 @@ export function useAudioScheduler({
     if (playIndexRef.current >= notesRef.current.length) {
       if (state.isLooping) {
         playIndexRef.current = 0;
+        // Trigger loop restart callback (for haptic feedback)
+        if (onLoopRestart) {
+          onLoopRestart();
+        }
       } else {
         return false; // End playback
       }
     }
     return true; // Continue
-  }, []);
+  }, [onLoopRestart]);
   
   /**
    * Main scheduler loop

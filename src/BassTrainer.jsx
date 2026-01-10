@@ -35,6 +35,7 @@ import { usePlayerState } from "./hooks/usePlayerState.js";
 import { useAudioScheduler } from "./hooks/useAudioScheduler.js";
 import { usePWA } from "./hooks/usePWA.js";
 import { usePracticeStats } from "./hooks/usePracticeStats.js";
+import { useHapticFeedback } from "./hooks/useHapticFeedback.js";
 
 // Config
 import { THEME_CONFIG, COUNTDOWN_CONFIG, VIEW_MODES } from "./config/uiConfig.js";
@@ -78,6 +79,9 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   // Player state
   const { state: playerState, actions } = usePlayerState();
   const audio = useBassAudio();
+  
+  // Haptic Feedback
+  const { vibratePlay, vibrateStop, vibrateCountdown, vibrateLoopRestart } = useHapticFeedback();
   
   const [viewMode, setViewMode] = useState(VIEW_MODES.TAB);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -220,7 +224,7 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     return getHeaderInfo(selectedPattern, secondPattern);
   }, [selectedPattern, secondPattern, exerciseState.isCustom, exerciseState.customData]);
 
-  const scheduler = useAudioScheduler({ audio, notes: tabData, playerState, actions });
+  const scheduler = useAudioScheduler({ audio, notes: tabData, playerState, actions, onLoopRestart: vibrateLoopRestart });
 
   const handlePlay = useCallback(async () => {
     await audio.resume();
@@ -228,6 +232,9 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     audio.restoreVolumes(playerState.bassVolume, playerState.metronomeVolume);
     actions.setAudioReady(true);
     if (playerState.isPlaying || playerState.isCountingDown) return;
+
+    // Haptic feedback for play
+    vibratePlay();
 
     if (!playerState.isCountdownEnabled) {
       actions.playImmediate();
@@ -237,6 +244,7 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
 
     actions.play();
     audio.playCountdownBeep();
+    vibrateCountdown(false);
     
     // Countdown logic - track countdown value locally to avoid stale closures
     let currentCount = COUNTDOWN_CONFIG.duration; // Starts at 3
@@ -246,17 +254,19 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
         // Show 2, then 1
         actions.setCountdown(currentCount);
         audio.playCountdownBeep();
+        vibrateCountdown(false);
       } else {
         // Countdown finished
         clearInterval(interval);
         audio.playCountdownBeep(true);
+        vibrateCountdown(true); // Final beat - stronger vibration
         actions.countdownComplete();
         scheduler.start();
       }
     }, COUNTDOWN_CONFIG.interval);
     
     countdownTimeoutsRef.current.push(interval);
-  }, [audio, playerState, actions, scheduler]);
+  }, [audio, playerState, actions, scheduler, vibratePlay, vibrateCountdown]);
 
   const handleStop = useCallback(() => {
     countdownTimeoutsRef.current.forEach(id => clearInterval(id));
@@ -265,7 +275,9 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
     // Immediately silence all scheduled sounds
     audio.stopAllSounds();
     actions.stop();
-  }, [scheduler, actions, audio]);
+    // Haptic feedback for stop
+    vibrateStop();
+  }, [scheduler, actions, audio, vibrateStop]);
 
   // Volume
   const handleBassVolume = (v) => { actions.setBassVolume(v); audio.setBassVolume(v); };

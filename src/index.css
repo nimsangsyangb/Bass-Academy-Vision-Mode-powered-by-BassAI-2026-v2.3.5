@@ -263,6 +263,82 @@ body {
   animation: fadeInUp 0.6s ease-out forwards;
 }
 
+/* ============================================
+   HAPTIC MICRO-ANIMATIONS
+   Tactile feedback for interactive elements
+   ============================================ */
+
+@keyframes haptic-press {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(0.96); }
+}
+
+@keyframes haptic-ripple {
+  0% { 
+    box-shadow: 0 0 0 0 var(--color-gold);
+    opacity: 0.4;
+  }
+  100% { 
+    box-shadow: 0 0 0 12px transparent;
+    opacity: 0;
+  }
+}
+
+@keyframes haptic-pulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% { 
+    transform: scale(1.02);
+    opacity: 0.9;
+  }
+}
+
+/* Haptic press effect - subtle scale on active */
+.animate-haptic-press:active {
+  animation: haptic-press 100ms ease-out;
+}
+
+/* Haptic ripple effect - expanding ring */
+.animate-haptic-ripple::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.animate-haptic-ripple:active::after {
+  animation: haptic-ripple 300ms ease-out;
+}
+
+/* Haptic pulse for playing state */
+.animate-haptic-pulse {
+  animation: haptic-pulse 800ms ease-in-out infinite;
+}
+
+/* Button tactile feedback - enhanced active state */
+.btn-haptic {
+  position: relative;
+  transition: transform 100ms ease-out, box-shadow 150ms ease;
+}
+
+.btn-haptic:active {
+  transform: scale(0.97);
+}
+
+/* Playback button specific haptic */
+.btn-play-haptic:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 20px var(--color-gold);
+}
+
+.btn-stop-haptic:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 20px var(--color-error);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -617,5 +693,16 @@ body {
   .scroll-hint {
     animation: none;
     opacity: 0.6;
+  }
+  
+  /* Disable haptic micro-animations */
+  .animate-haptic-press:active,
+  .animate-haptic-ripple:active::after,
+  .animate-haptic-pulse,
+  .btn-haptic:active,
+  .btn-play-haptic:active,
+  .btn-stop-haptic:active {
+    animation: none !important;
+    transform: none !important;
   }
 }
