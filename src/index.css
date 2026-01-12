@@ -763,3 +763,69 @@ body {
   }
 }
 
+/* ============================================
+   LOOP MODE ANIMATIONS
+   Playhead and note micro-animations
+   ============================================ */
+
+/* Playhead glow effect */
+.shadow-playhead {
+  box-shadow: 0 0 12px var(--color-gold), 0 0 24px var(--color-gold);
+}
+
+/* Note attack animation - quick scale up when playhead crosses */
+@keyframes loop-note-attack {
+  0% { 
+    transform: scale(1); 
+    opacity: 0.7; 
+  }
+  50% { 
+    transform: scale(1.15); 
+    opacity: 1;
+    box-shadow: 0 0 16px var(--color-gold), 0 0 32px var(--color-gold);
+  }
+  100% { 
+    transform: scale(1); 
+    opacity: 1; 
+  }
+}
+
+.animate-loop-attack {
+  animation: loop-note-attack 150ms ease-out;
+}
+
+/* Ghost note styling */
+.loop-note-ghost {
+  opacity: 0.25;
+}
+
+/* Accent note styling */
+.loop-note-accent {
+  transform: scale(1.1);
+}
+
+/* Playhead pulse for downbeats */
+@keyframes playhead-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px var(--color-gold), 0 0 24px var(--color-gold);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--color-gold), 0 0 40px var(--color-gold);
+  }
+}
+
+.playhead-downbeat {
+  animation: playhead-pulse 200ms ease-out;
+}
+
+/* Reduce motion - Loop Mode */
+@media (prefers-reduced-motion: reduce) {
+  .animate-loop-attack,
+  .playhead-downbeat {
+    animation: none !important;
+  }
+  
+  .shadow-playhead {
+    box-shadow: 0 0 4px var(--color-gold);
+  }
+}

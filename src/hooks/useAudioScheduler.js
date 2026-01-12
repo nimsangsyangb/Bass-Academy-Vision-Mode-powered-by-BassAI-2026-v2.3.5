@@ -151,6 +151,16 @@ export function useAudioScheduler({
     stop,
     playIndexRef,
     nextNoteTimeRef,
+    // Loop Mode extensions
+    getAudioContext: () => audio.serviceRef?.current?.audioContext,
+    getLoopRelativeTime: () => {
+      const ctx = audio.serviceRef?.current?.audioContext;
+      if (!ctx) return 0;
+      const state = stateRef.current;
+      const loopSec = (60 / state.tempo) * RHYTHM_CONFIG.beatsPerMeasure;
+      const elapsed = ctx.currentTime - (nextNoteTimeRef.current - loopSec);
+      return Math.max(0, Math.min(1, (elapsed % loopSec) / loopSec));
+    },
   };
 }
 

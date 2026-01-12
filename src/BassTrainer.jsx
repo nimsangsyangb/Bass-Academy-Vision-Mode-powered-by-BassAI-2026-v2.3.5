@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Music, AlertCircle, Guitar, List, ArrowLeft, Maximize2, BarChart2, Sliders, ExternalLink } from "lucide-react";
+import { Music, AlertCircle, Guitar, List, ArrowLeft, Maximize2, BarChart2, Sliders, ExternalLink, Repeat } from "lucide-react";
 
 // Components - Layout
 import Header from "./components/layout/Header.jsx";
@@ -20,6 +20,9 @@ import TablatureDesktop from "./components/tablature/TablatureDesktop.jsx";
 import TablatureMobile from "./components/tablature/TablatureMobile.jsx";
 import FretboardView from "./components/FretboardView.jsx";
 import FullscreenTablature from "./components/tablature/FullscreenTablature.jsx";
+
+// Components - Loop Mode
+import LoopModeWrapper from "./components/loop/LoopModeWrapper.jsx";
 
 // Components - Player
 import ControlPanel from "./components/player/ControlPanel.jsx";
@@ -490,15 +493,20 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 sm:gap-3">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-lg gradient-gold flex items-center justify-center">
-                  {viewMode === VIEW_MODES.TAB ? <Music className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-primary-deep)]" /> : <Guitar className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-primary-deep)]" />}
+                  {viewMode === VIEW_MODES.TAB ? <Music className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-primary-deep)]" /> 
+                   : viewMode === VIEW_MODES.LOOP ? <Repeat className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-primary-deep)]" />
+                   : <Guitar className="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 text-[var(--color-primary-deep)]" />}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[var(--color-cream)] text-xs sm:text-sm">{viewMode === VIEW_MODES.TAB ? 'Tablature' : 'Fretboard'}</h3>
+                  <h3 className="font-semibold text-[var(--color-cream)] text-xs sm:text-sm">
+                    {viewMode === VIEW_MODES.TAB ? 'Tablature' : viewMode === VIEW_MODES.LOOP ? 'Loop Mode' : 'Fretboard'}
+                  </h3>
                 </div>
               </div>
               <div className="flex items-center gap-1 sm:gap-2">
                 <button onClick={() => setViewMode(VIEW_MODES.TAB)} className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${viewMode === VIEW_MODES.TAB ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]' : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]'}`}>Tab</button>
                 <button onClick={() => setViewMode(VIEW_MODES.FRETBOARD)} className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${viewMode === VIEW_MODES.FRETBOARD ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]' : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]'}`}>Diapasón</button>
+                <button onClick={() => setViewMode(VIEW_MODES.LOOP)} className={`px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all ${viewMode === VIEW_MODES.LOOP ? 'bg-[var(--color-gold)] text-[var(--color-primary-deep)]' : 'bg-[var(--color-primary-dark)] text-[var(--color-primary-light)]'}`}>Loop</button>
                 <button 
                   onClick={() => setIsFullscreen(true)}
                   className="px-2.5 py-1.5 sm:px-3 sm:py-2 rounded-lg text-[10px] sm:text-xs font-medium transition-all bg-[var(--color-primary-dark)] text-[var(--color-primary-light)] hover:bg-[var(--color-gold)] hover:text-[var(--color-primary-deep)] flex items-center gap-1"
@@ -521,6 +529,16 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
 
           {viewMode === VIEW_MODES.FRETBOARD ? (
             <FretboardView tabData={tabData} currentNoteIndex={currentNoteIndex} />
+          ) : viewMode === VIEW_MODES.LOOP ? (
+            <LoopModeWrapper
+              tabData={tabData}
+              currentNoteIndex={currentNoteIndex}
+              scheduler={scheduler}
+              tempo={tempo}
+              isPlaying={isPlaying}
+              onPlay={handlePlay}
+              onStop={handleStop}
+            />
           ) : (
             <>
               <TablatureDesktop tabData={tabData} currentNoteIndex={currentNoteIndex} selectedRoot={selectedRoot} selectedPattern={selectedPattern} secondRoot={secondRoot} secondPattern={secondPattern} tempo={tempo} isPlaying={isPlaying} />

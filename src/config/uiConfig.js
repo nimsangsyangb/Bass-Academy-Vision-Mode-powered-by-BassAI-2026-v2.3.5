@@ -20,6 +20,18 @@ export const RHYTHM_CONFIG = {
 export const VIEW_MODES = {
   TAB: 'tab',
   FRETBOARD: 'fretboard',
+  LOOP: 'loop',
+};
+
+// Loop Mode Configuration
+export const LOOP_MODE_CONFIG = {
+  defaultLoopLength: 1,        // measures
+  maxLoopLength: 4,
+  subdivisions: ['quarter', 'eighth', 'triplet', 'sixteenth'],
+  defaultSubdivision: 'eighth',
+  playheadColor: 'var(--color-gold)',
+  ghostNoteOpacity: 0.25,
+  accentScale: 1.1,
 };
 
 // Theme settings
