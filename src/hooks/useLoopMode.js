@@ -51,8 +51,14 @@ export function useLoopMode({
     }
 
     const now = audioContext.currentTime;
-    const loopDuration = getLoopDuration();
+    const loopDuration = (60 / tempo) * RHYTHM_CONFIG.beatsPerMeasure * loopLength;
     const elapsed = now - startTimeRef.current;
+    
+    // Handle negative elapsed time (before start)
+    if (elapsed < 0) {
+      rafRef.current = requestAnimationFrame(tick);
+      return;
+    }
     
     // Calculate progress within current loop (0..1)
     const progress = (elapsed % loopDuration) / loopDuration;
@@ -64,28 +70,21 @@ export function useLoopMode({
       onLoopRestart?.();
     }
     
-    // Update playhead - only setState if difference is noticeable
-    // This prevents excessive re-renders while keeping smooth animation
+    // Update playhead ref for direct DOM access
     playheadRef.current = progress;
     
-    // Update state at ~30fps for React (every ~33ms = 0.03 of loop at 1sec loop)
-    // The actual CSS transform uses playheadRef for 60fps
-    const threshold = 0.01; // 1% threshold for state update
-    if (Math.abs(progress - playhead) > threshold || progress < playhead) {
-      setPlayhead(progress);
-    }
+    // Update React state (throttled to avoid excessive re-renders)
+    setPlayhead(progress);
     
-    // Calculate which beat the playhead is on
+    // Calculate which note the playhead is on
     const beatProgress = progress * RHYTHM_CONFIG.beatsPerMeasure * loopLength;
     const currentBeat = Math.floor(beatProgress);
     const noteIndex = currentBeat * RHYTHM_CONFIG.tripletsPerBeat;
     
-    if (noteIndex !== highlightNoteIndex) {
-      setHighlightNoteIndex(noteIndex);
-    }
+    setHighlightNoteIndex(noteIndex);
     
     rafRef.current = requestAnimationFrame(tick);
-  }, [scheduler, tempo, getLoopDuration, onLoopRestart, playhead, highlightNoteIndex, loopLength]);
+  }, [scheduler, tempo, loopLength, onLoopRestart]);
 
   /**
    * Start the playhead animation
@@ -100,6 +99,10 @@ export function useLoopMode({
     setPlayhead(0);
     setHighlightNoteIndex(0);
     
+    // Cancel any existing animation frame before starting new one
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
     rafRef.current = requestAnimationFrame(tick);
   }, [scheduler, tick]);
 
