@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/Version-2.3.3-C9A554?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.3.4-C9A554?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
@@ -65,7 +65,16 @@ Bass Academy addresses a critical gap in the music education technology market: 
 3. **Partnership Potential** — Licensing with music schools, YouTube creators
 4. **Mobile Apps** — Capacitor/React Native wrapper for App Store presence
 
-## 🆕 What's New in v2.3.3
+## 🆕 What's New in v2.3.4
+
+- 🎵 **Loop Mode Micro-animations** - Three-phase note lifecycle (attack/sustain/fade)
+- 🔀 **Swing Toggle** - Enable swing feel visualization in Loop Mode controls
+- 📊 **Loop Analysis Panel** - Timing deviation histogram with early/on-time/late stats
+- 🔁 **Loop Mode Recording** - Recordings now capture loop settings (loopMode, loopLength, subdivision)
+- 🪟 **Popout Window Sync** - Playhead progress syncs to popout trainer window
+- 🎨 **New CSS Animations** - `animate-loop-sustain`, `animate-loop-fade` with a11y support
+
+### Previous (v2.3.3)
 
 - ⚡ **Performance Optimizations** - Faster HomeScreen loading with throttled mouse tracking
 - 🎯 **Memoized Components** - ArtistCard, Magnetic, and MusicParticles now use React.memo
@@ -98,7 +107,7 @@ Bass Academy addresses a critical gap in the music education technology market: 
 | 🔊 **Web Audio Engine** | Custom synthesizer built with Web Audio API |
 | 🥁 **Metronome** | Beat indicator with triplet subdivisions |
 | ⏱️ **Tempo Control** | Adjustable BPM from 40-160 |
-| 🔄 **Loop Mode** | Continuous practice without interruption |
+| 🔄 **Loop Mode** | Continuous practice with micro-animations, swing feel, and timing analysis |
 | 🎙️ **Recording Studio** | Record, playback, and review your practice sessions |
 | 🌓 **Dark/Light Theme** | Toggle between themes with persistence |
 | 📱 **Responsive Design** | Mobile-first design optimized for all screen sizes |
@@ -257,6 +266,13 @@ The app will be available at `http://localhost:5173`
 
 ## 🗺️ Roadmap
 
+### ✅ Completed (v2.3.4)
+- [x] **Loop Mode Micro-animations** with attack/sustain/fade phases
+- [x] **Swing Toggle** for shuffle/swing feel visualization
+- [x] **Loop Analysis Panel** with timing deviation histogram
+- [x] **Loop Mode Recording Integration** with metadata capture
+- [x] **Popout Window Playhead Sync** via postMessage API
+
 ### ✅ Completed (v2.3.3)
 - [x] **Performance Optimizations** with RAF-throttled mouse tracking
 - [x] **Memoized React Components** for reduced re-renders
@@ -323,6 +339,6 @@ MIT © 2026 Julian Javier Soto
 
 **Made with ❤️ for bass players by [Julian Soto](https://github.com/juliandeveloper05)**
 
-**Bass Academy · 2026 · v2.3.3**
+**Bass Academy · 2026 · v2.3.4**
 
 </div>
