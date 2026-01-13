@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/Version-2.3.4-C9A554?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.3.5-C9A554?style=for-the-badge)
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind-4.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
@@ -65,16 +65,16 @@ Bass Academy addresses a critical gap in the music education technology market: 
 3. **Partnership Potential** — Licensing with music schools, YouTube creators
 4. **Mobile Apps** — Capacitor/React Native wrapper for App Store presence
 
-## 🆕 What's New in v2.3.4
+## 🆕 What's New in v2.3.5
 
-- 🎵 **Loop Mode Micro-animations** - Three-phase note lifecycle (attack/sustain/fade)
-- 🔀 **Swing Toggle** - Enable swing feel visualization in Loop Mode controls
-- 📊 **Loop Analysis Panel** - Timing deviation histogram with early/on-time/late stats
-- 🔁 **Loop Mode Recording** - Recordings now capture loop settings (loopMode, loopLength, subdivision)
-- 🪟 **Popout Window Sync** - Playhead progress syncs to popout trainer window
-- 🎨 **New CSS Animations** - `animate-loop-sustain`, `animate-loop-fade` with a11y support
+- 👁️ **BassAI Vision Mode** - Control Bass Academy with hand gestures (MediaPipe)
+- ✋ **6 Gesture Commands** - Play, Stop, Pause, Tempo ±5 BPM, Toggle Loop
+- 🎯 **Charging Ring Feedback** - Visual progress indicator during gesture hold
+- 🔧 **Feature-Flagged** - Enable with `VITE_VISION_ENABLED=true` in `.env.local`
+- 📊 **Gesture Metrics** - Infrastructure for tracking abort rates and hold times
+- 📖 **Developer Docs** - `VISION_DOCS.md` with architecture and extension guide
 
-### Previous (v2.3.3)
+### Previous (v2.3.4)
 
 - ⚡ **Performance Optimizations** - Faster HomeScreen loading with throttled mouse tracking
 - 🎯 **Memoized Components** - ArtistCard, Magnetic, and MusicParticles now use React.memo
@@ -112,6 +112,7 @@ Bass Academy addresses a critical gap in the music education technology market: 
 | 🌓 **Dark/Light Theme** | Toggle between themes with persistence |
 | 📱 **Responsive Design** | Mobile-first design optimized for all screen sizes |
 | 📲 **PWA Support** | Install on any device for offline practice |
+| 👁️ **Vision Control** | Hands-free gesture control via webcam (experimental) |
 
 ## 🎨 Custom Exercise Builder
 
@@ -195,6 +196,14 @@ src/
 ├── data/
 │   ├── exerciseLibrary.js        # Patterns, categories & generation
 │   └── customExerciseLibrary.js  # Custom exercise helpers
+├── features/
+│   ├── recording/            # Audio recording system
+│   └── vision/               # BassAI Vision gesture control
+│       ├── components/       # VisionStudio, GestureIndicator
+│       ├── hooks/            # useHandTracking, useGestureRecognizer
+│       ├── workers/          # vision.worker.js (off-thread)
+│       ├── utils/            # gestureCalculations, smoothingFilters
+│       └── config/           # visionConfig, gesturePresets
 ├── App.jsx                   # Router between Home, Builder & Trainer
 └── BassTrainer.jsx           # Exercise trainer component
 ```
@@ -266,6 +275,14 @@ The app will be available at `http://localhost:5173`
 
 ## 🗺️ Roadmap
 
+### ✅ Completed (v2.3.5)
+- [x] **BassAI Vision Mode** with MediaPipe hand tracking
+- [x] **6 Gesture Commands** (Play, Stop, Pause, Tempo, Loop)
+- [x] **Charging Ring UI** with hold-to-confirm feedback
+- [x] **Web Worker Processing** for off-thread detection
+- [x] **Gesture Metrics Tracking** infrastructure
+- [x] **Developer Documentation** with extension guide
+
 ### ✅ Completed (v2.3.4)
 - [x] **Loop Mode Micro-animations** with attack/sustain/fade phases
 - [x] **Swing Toggle** for shuffle/swing feel visualization
@@ -293,11 +310,34 @@ The app will be available at `http://localhost:5173`
 - [x] **Mobile landscape optimization** for practice sessions
 - [x] **Multi-artist exercise library** (Patitucci, Wooten, Flea, Jaco)
 
-### 🔜 Upcoming (v2.4.0)
-- [ ] Scale patterns (Major, Minor, Modes)
-- [ ] Audio mixing (mic + exercise audio)
-- [ ] Community exercise sharing
-- [ ] Exercise collections/folders
+### 🔜 Upcoming Features
+
+#### 🔴 High Priority (v2.4.0)
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Vision Mode Swipe Gestures** | Navigate exercises with hand swipes | Planned |
+| **Scale Patterns Library** | Major, Minor, Modes (Dorian, Mixolydian, etc.) | In Design |
+| **MIDI Input Support** | Connect bass via USB/MIDI for pitch detection | Research |
+| **Mobile Vision Optimization** | iOS Safari WebRTC stability improvements | Testing |
+
+#### 🟡 Medium Priority
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Audio Mixing** | Blend microphone input with exercise playback | Planned |
+| **Exercise Collections** | Organize exercises into folders/playlists | Planned |
+| **Practice Analytics Dashboard** | Track progress, weak points, session history | In Design |
+| **Two-Hand UI Scale Gestures** | Pinch to zoom tablature (Vision Mode Phase 2) | Backlog |
+| **Backing Tracks** | Drum/bass loops for practice context | Backlog |
+
+#### 🟢 Low Priority (Future)
+| Feature | Description | Status |
+|---------|-------------|--------|
+| **Community Exercise Sharing** | Upload/download exercises from other users | Backlog |
+| **Social Features** | User profiles, ratings, comments | Backlog |
+| **Mobile App (Capacitor)** | Native iOS/Android wrapper | Backlog |
+| **Voice Commands** | "Hey Bass, start exercise" integration | Research |
+| **AI Practice Suggestions** | ML-based exercise recommendations | Concept |
+| **Multi-language Support** | i18n for Spanish, Portuguese, English | Backlog |
 
 ## 💬 Feedback & Contact
 
@@ -339,6 +379,6 @@ MIT © 2026 Julian Javier Soto
 
 **Made with ❤️ for bass players by [Julian Soto](https://github.com/juliandeveloper05)**
 
-**Bass Academy · 2026 · v2.3.4**
+**Bass Academy · Vision Mode (powered by BassAI) · 2026 · v2.3.5**
 
 </div>

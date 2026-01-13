@@ -45,6 +45,7 @@ import { useWindowSync, SYNC_COMMANDS } from "./hooks/useWindowSync.js";
 
 // Config
 import { THEME_CONFIG, COUNTDOWN_CONFIG, VIEW_MODES } from "./config/uiConfig.js";
+import { FEATURES } from "./config/featureFlags.js";
 
 // Data
 import { 
@@ -70,6 +71,10 @@ import RecordingIndicator from "./components/recording/RecordingIndicator.jsx";
 import RecordingModal from "./components/recording/RecordingModal.jsx";
 import { useMediaRecorder } from "./features/recording/hooks/useMediaRecorder.js";
 import { useRecordingStorage } from "./features/recording/hooks/useRecordingStorage.js";
+
+// Vision Feature (lazy loaded)
+import { VisionStudio } from "./features/vision/index.js";
+import { visionBridge } from "./services/VisionAudioBridge.js";
 
 const EXERCISE_STORAGE_KEY = 'bass-trainer-exercise-state';
 
@@ -105,6 +110,9 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   // Popout Window Hook
   const { openPopout, closePopout, isPopoutOpen, popoutWindow } = usePopoutWindow();
   const [isLatencyModalOpen, setIsLatencyModalOpen] = useState(false);
+  
+  // Vision Control State (feature-flagged)
+  const [isVisionOpen, setIsVisionOpen] = useState(false);
   
   // Recording Hooks
   const [isRecordingModalOpen, setIsRecordingModalOpen] = useState(false);
@@ -354,6 +362,34 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
   const handleBassVolume = (v) => { actions.setBassVolume(v); audio.setBassVolume(v); };
   const handleMetronomeVolume = (v) => { actions.setMetronomeVolume(v); audio.setMetronomeVolume(v); };
 
+  // Vision gesture command handler - Vision → BassTrainer → AudioService
+  const handleVisionGesture = useCallback((gesture, confidence) => {
+    // Execute the gesture through the bridge
+    const result = visionBridge.executeGesture(gesture, confidence);
+    if (result.success) {
+      console.log('[Vision] Gesture executed:', result);
+    }
+  }, []);
+
+  // Register command handlers for vision bridge
+  useEffect(() => {
+    visionBridge.setHandlers({
+      play: handlePlay,
+      stop: handleStop,
+      togglePause: () => {
+        if (playerState.isPlaying || playerState.isCountingDown) {
+          handleStop();
+        } else {
+          handlePlay();
+        }
+      },
+      tempoUp: () => actions.setTempo(Math.min(playerState.tempo + 5, 200)),
+      tempoDown: () => actions.setTempo(Math.max(playerState.tempo - 5, 40)),
+      toggleLoop: actions.toggleLoop,
+    });
+    visionBridge.setDebug(FEATURES.VISION_DEBUG);
+  }, [handlePlay, handleStop, actions, playerState.isPlaying, playerState.isCountingDown, playerState.tempo]);
+
   const { isPlaying, isCountingDown, countdown, currentNoteIndex, currentBeat, currentTriplet, isAudioReady, tempo, isLooping, isMetronomeEnabled, isNotesMuted, isCountdownEnabled } = playerState;
 
   // Keyboard Shortcuts
@@ -447,6 +483,23 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
           
           {/* Stats Button */}
           <div className="flex items-center gap-2">
+            {/* Vision Control Button (feature-flagged) */}
+            {FEATURES.VISION_ENABLED && (
+              <button 
+                onClick={() => setIsVisionOpen(true)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full glass border transition-all ${
+                  isVisionOpen 
+                    ? 'border-cyan-400 text-cyan-400 bg-cyan-400/10' 
+                    : 'border-[var(--color-primary-medium)] text-[var(--color-primary-light)] hover:text-cyan-400 hover:border-cyan-400'
+                }`}
+                aria-label="Activar control por gestos"
+                title="BassAI Vision - Control por gestos"
+              >
+                <span className="text-lg">✋</span>
+                <span className="text-xs font-medium hidden sm:inline">Vision</span>
+              </button>
+            )}
+            
             {/* Latency Calibration Button */}
             <button 
               onClick={() => setIsLatencyModalOpen(true)}
@@ -650,6 +703,18 @@ const BassTrainer = ({ selectedCategory, customExerciseConfig, onBack }) => {
         exerciseContext={exerciseContext}
         initialTab="record"
       />
+
+      {/* Vision Control Modal */}
+      {isVisionOpen && FEATURES.VISION_ENABLED && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="relative w-full max-w-2xl h-[70vh] max-h-[600px] rounded-2xl overflow-hidden shadow-2xl">
+            <VisionStudio
+              onGestureCommand={handleVisionGesture}
+              onClose={() => setIsVisionOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
