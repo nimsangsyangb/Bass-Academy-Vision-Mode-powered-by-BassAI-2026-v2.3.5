@@ -9,6 +9,7 @@
  */
 
 import { createContext, useContext, useReducer, useMemo } from 'react';
+import { logUIState, logEngineState } from '../utils/visionLogger.js';
 
 const VisionContext = createContext(null);
 
@@ -47,9 +48,13 @@ function visionReducer(state, action) {
   switch (action.type) {
     // Engine control (motor)
     case 'ENABLE_VISION':
+      logEngineState(true);
+      logUIState(true, true);
       return { ...state, visionEnabled: true, visionUIOpen: true };
     
     case 'DISABLE_VISION':
+      logEngineState(false);
+      logUIState(false, false);
       return { 
         ...state, 
         visionEnabled: false, 
@@ -62,10 +67,12 @@ function visionReducer(state, action) {
     
     // UI control (panel)
     case 'OPEN_VISION_UI':
+      logUIState(true, state.visionEnabled);
       return { ...state, visionUIOpen: true, drawingEnabled: true };
     
     case 'CLOSE_VISION_UI':
       // IMPORTANT: Only closes UI, does NOT stop engine
+      logUIState(false, state.visionEnabled);
       return { ...state, visionUIOpen: false, drawingEnabled: false };
     
     case 'SET_DRAWING_ENABLED':

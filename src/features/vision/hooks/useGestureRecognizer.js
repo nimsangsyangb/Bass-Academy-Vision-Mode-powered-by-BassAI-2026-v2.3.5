@@ -8,6 +8,7 @@ import { useVisionContext } from '../context/VisionContext.jsx';
 import { detectGesture } from '../utils/gestureCalculations.js';
 import { movingAverageFilter } from '../utils/smoothingFilters.js';
 import { VISION_CONFIG } from '../config/visionConfig.js';
+import { logGestureRecognized, logHoldTime, logGestureAborted } from '../utils/visionLogger.js';
 
 export function useGestureRecognizer({ 
   enabled = true,
@@ -92,6 +93,8 @@ export function useGestureRecognizer({
         if (!history.holdStartTime || dominantGesture !== history.currentHoldGesture) {
           // Track abort if we were holding a different gesture
           if (history.holdStartTime && history.currentHoldGesture) {
+            const abortHoldTime = now - history.holdStartTime;
+            logGestureAborted(history.currentHoldGesture, abortHoldTime, 'changed');
             metricsRef.current.gestureAborts++;
           }
           history.holdStartTime = now;
@@ -111,6 +114,10 @@ export function useGestureRecognizer({
           // Gesture held long enough - confirm it
           history.lastConfirmedGesture = dominantGesture;
           actions.setGesture(dominantGesture, avgConfidence);
+          
+          // Log: gesture recognized with real hold time
+          logGestureRecognized(dominantGesture, avgConfidence, holdDuration);
+          logHoldTime(dominantGesture, holdDuration, requiredHoldTime);
           
           // Track metrics
           metricsRef.current.confirmedGestures++;
@@ -134,6 +141,8 @@ export function useGestureRecognizer({
       // No confident gesture - reset
       // Track abort if we were in the middle of holding
       if (history.holdStartTime && history.currentHoldGesture) {
+        const abortHoldTime = now - history.holdStartTime;
+        logGestureAborted(history.currentHoldGesture, abortHoldTime, 'released');
         metricsRef.current.gestureAborts++;
       }
       

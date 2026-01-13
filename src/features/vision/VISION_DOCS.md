@@ -219,3 +219,30 @@ These metrics help tune:
 - ❌ Volume by gesture (too fine for coarse input)
 - ❌ Note playing by gesture (latency too high)
 - ❌ Continuous value control without confirmation
+
+---
+
+## Design Philosophy
+
+> The core principles that shape Vision's architecture and future evolution.
+
+### 1. Vision es un sensor, no un modo
+
+Vision operates as a **passive sensing layer**, not an interactive mode. It continuously reads hand data when enabled, independent of any UI state. The engine runs silently in the background, interpreting intent without demanding attention.
+
+### 2. UI es opcional
+
+The Vision panel is a **convenience, not a requirement**. Users can close the visual feedback while gestures continue working. This respects the musician's focus—they shouldn't need to look at a screen to control their practice.
+
+### 3. Gestos son intención sostenida
+
+A gesture is not a tap—it's a **deliberate hold**. The hold time (500-700ms) filters out accidental movements and ensures every triggered command reflects conscious intent. This trades speed for reliability.
+
+### 4. Menos es más
+
+Fewer gestures, fewer states, fewer edge cases. We support **6 gestures**—enough to control practice flow, not enough to overwhelm. Every addition must justify its cognitive cost.
+
+---
+
+*These principles guide all Vision development. When in doubt, choose the simpler, more reliable path.*
+
